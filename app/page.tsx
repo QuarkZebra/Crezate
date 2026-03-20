@@ -102,7 +102,7 @@ export default function Home() {
           style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}
           className="text-lg md:text-xl font-light tracking-wide"
         >
-          <span style={{ color: 'var(--cream-bright)' }}>Crezate</span>
+          <span style={{ color: 'var(--cream-bright)' }}>  Crezate</span>
         </div>
 
         {/* Resources dropdown */}

@@ -60,16 +60,33 @@ export default function Home() {
   return (
     <main className="relative">
       {/* ── FIXED BACKGROUND ── */}
+      {/* Mobile image */}
       <div
-        className="fixed inset-0 z-0"
+        className="fixed inset-0 z-0 md:hidden"
         style={{
-          backgroundImage: 'url(/hero.png)',
+          backgroundImage: 'url(/hero-m.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 20%',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(to bottom, rgba(10,12,24,0.25) 0%, rgba(10,12,24,0.15) 40%, rgba(10,12,24,0.5) 80%, rgba(10,12,24,0.85) 100%)',
+          }}
+        />
+      </div>
+      {/* Desktop image */}
+      <div
+        className="fixed inset-0 z-0 hidden md:block"
+        style={{
+          backgroundImage: 'url(/hero-d.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center 30%',
           backgroundRepeat: 'no-repeat',
         }}
       >
-        {/* Darken overlay for text legibility */}
         <div
           className="absolute inset-0"
           style={{
@@ -79,7 +96,7 @@ export default function Home() {
       </div>
 
       {/* ── TOP NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 md:px-10 md:py-6">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-6 md:px-14 md:py-8">
         {/* Logo */}
         <div
           style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}
@@ -233,7 +250,7 @@ export default function Home() {
               color: 'var(--cream-dim)',
             }}
           >
-            Where learning takes shape
+            Where learning is limitless
           </div>
         </div>
       </section>

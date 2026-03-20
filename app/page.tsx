@@ -96,13 +96,13 @@ export default function Home() {
       </div>
 
       {/* ── TOP NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-16 py-12 md:px-28 md:py-16">
+      <nav className="fixed top-10 left-10 right-10 z-50 flex items-center justify-between px-16 py-12 md:px-28 md:py-16">
         {/* Logo */}
         <div
           style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}
           className="text-lg md:text-xl font-light tracking-wide"
         >
-          <span style={{ color: 'var(--cream-bright)' }}>  Crezate</span>
+          <span style={{ color: 'var(--cream-bright)' }}>Crezate</span>
         </div>
 
         {/* Resources dropdown */}

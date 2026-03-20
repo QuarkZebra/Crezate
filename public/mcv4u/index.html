@@ -1,0 +1,715 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<title>MCV4U — Calculus &amp; Vectors</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   LIGHT THEME (default)
+   ═══════════════════════════════════════════════ */
+:root{
+  --bg:#f8f7f4;--white:#fff;--hover:#faf9f7;
+  --blue:#1e3a5f;--accent:#2563eb;--accent-dim:rgba(37,99,235,.08);--accent-bdr:rgba(37,99,235,.2);
+  --gold:#a07808;--teal:#0b7d8c;--rose:#b05050;--muted:#7a7a8a;--muted2:#b0b0ba;
+  --text:#1a1a2e;--t2:#4a4a5a;--t3:#8a8a9a;--t4:#b8b8c4;
+  --bdr:#e5e3df;--bdr2:#d0cec8;
+  --err:#dc2626;--amber:#d97706;--amber-dim:rgba(217,119,6,.06);
+  --test-bg:rgba(196,92,92,.06);--quiz-bg:rgba(80,130,196,.05);--review-bg:rgba(90,155,100,.04);
+  --r:10px;--sh:0 1px 2px rgba(0,0,0,.04);--sh2:0 1px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.03);
+  --topbar-bg:rgba(248,247,244,.88);--grid-color:rgba(30,58,95,.04);
+  --fab-sh:0 4px 20px rgba(37,99,235,.25);--fab-sh2:0 6px 28px rgba(37,99,235,.35);
+  --tip-bg:var(--text);--tip-color:#fff;--err-tip-bg:#fff;
+}
+
+/* ═══════════════════════════════════════════════
+   DARK THEME — Deep Navy
+   ═══════════════════════════════════════════════ */
+html.dark{
+  --bg:#12161e;--white:#1a1f2a;--hover:#212735;
+  --blue:#a8c4e0;--accent:#5b8def;--accent-dim:rgba(91,141,239,.09);--accent-bdr:rgba(91,141,239,.20);
+  --gold:#c8a850;--teal:#4db8a8;--rose:#d07070;--muted:#7080a0;--muted2:#4a5468;
+  --text:#d4dae4;--t2:#a0a8b8;--t3:#606878;--t4:#3e4452;
+  --bdr:#282e3a;--bdr2:#363e4e;
+  --err:#f06060;--amber:#e0a030;--amber-dim:rgba(224,160,48,.08);
+  --test-bg:rgba(208,112,112,.07);--quiz-bg:rgba(91,141,239,.05);--review-bg:rgba(77,184,168,.05);
+  --r:10px;--sh:0 1px 3px rgba(0,0,0,.2);--sh2:0 2px 8px rgba(0,0,0,.2),0 8px 24px rgba(0,0,0,.15);
+  --topbar-bg:rgba(18,22,30,.92);--grid-color:rgba(91,141,239,.06);
+  --fab-sh:0 4px 20px rgba(0,0,0,.4);--fab-sh2:0 6px 28px rgba(0,0,0,.5);
+  --tip-bg:#d4dae4;--tip-color:#12161e;--err-tip-bg:#1a1f2a;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;
+  background-image:linear-gradient(var(--grid-color) 1px,transparent 1px),linear-gradient(90deg,var(--grid-color) 1px,transparent 1px);
+  background-size:28px 28px;background-attachment:fixed;transition:background .3s,color .3s}
+a{color:inherit;text-decoration:none}
+
+.page{max-width:1100px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+
+/* Top Bar */
+.top-bar{position:sticky;top:0;z-index:100;background:var(--topbar-bg);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--bdr);margin:-2.5rem -1.5rem 2rem;padding:.6rem 1.5rem;display:flex;align-items:center;gap:.8rem;transition:background .3s}
+.top-bar .lbl{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);white-space:nowrap}
+.ptrack{flex:1;height:3px;background:var(--bdr);border-radius:2px;overflow:hidden}
+.pfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--teal));border-radius:2px;transition:width .6s}
+.ptxt{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--accent);font-weight:600;white-space:nowrap}
+
+/* Header */
+header{margin-bottom:2rem}
+.htop{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem;flex-wrap:wrap}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);
+  padding:.22rem .65rem;border:1px solid var(--accent-bdr);border-radius:100px;background:var(--accent-dim);font-weight:600}
+.hacts{display:flex;gap:.4rem}
+.hbtn{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--t3);cursor:pointer;background:var(--white);
+  border:1px solid var(--bdr);padding:.22rem .65rem;border-radius:100px;transition:all .2s}
+.hbtn:hover{color:var(--t2);border-color:var(--bdr2);background:var(--hover)}
+header h1{font-size:2.5rem;font-weight:800;letter-spacing:-.04em;line-height:1.1;color:var(--blue)}
+header .sub{color:var(--t3);font-size:.88rem;margin-top:.3rem;font-weight:400}
+
+/* Dark mode toggle */
+.dm-toggle{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--t3);cursor:pointer;background:var(--white);
+  border:1px solid var(--bdr);padding:.22rem .65rem;border-radius:100px;transition:all .2s;display:flex;align-items:center;gap:.3rem}
+.dm-toggle:hover{color:var(--t2);border-color:var(--bdr2);background:var(--hover)}
+.dm-icon{font-size:.8rem;line-height:1}
+
+/* Search */
+.sbar{display:flex;align-items:center;gap:.6rem;margin-bottom:1.2rem;padding:.55rem .9rem;background:var(--white);
+  border:1px solid var(--bdr);border-radius:var(--r);box-shadow:var(--sh);transition:border-color .2s,box-shadow .2s,background .3s}
+.sbar:focus-within{border-color:var(--accent-bdr);box-shadow:0 0 0 3px var(--accent-dim)}
+.sbar .si{color:var(--t4);font-size:.9rem}
+.sbar input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:.85rem}
+.sbar input::placeholder{color:var(--t4)}
+.kbd{font-family:'IBM Plex Mono',monospace;font-size:.58rem;color:var(--t4);background:var(--bg);border:1px solid var(--bdr);padding:.1rem .35rem;border-radius:4px}
+
+/* Units */
+.unit{margin-bottom:.5rem;border:1px solid var(--bdr);border-radius:var(--r);background:var(--white);box-shadow:var(--sh);
+  overflow:hidden;transition:all .3s ease;opacity:0;transform:translateY(20px)}
+.unit.revealed{opacity:1;transform:translateY(0)}
+.unit:hover{border-color:var(--bdr2);box-shadow:var(--sh2)}
+.unit.current{border-color:var(--accent-bdr);box-shadow:0 0 0 3px var(--accent-dim),var(--sh2)}
+
+.uhead{display:flex;align-items:center;padding:.9rem 1.15rem;cursor:pointer;user-select:none;transition:background .15s;gap:.8rem}
+.uhead:hover{background:var(--hover)}
+.unum{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--t4);font-weight:600;min-width:1.6rem}
+.current .unum{color:var(--accent)}
+.utitle{flex:1;font-size:1.02rem;font-weight:600;color:var(--text);letter-spacing:-.01em}
+.ucount{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--t4)}
+.utag{font-family:'IBM Plex Mono',monospace;font-size:.56rem;letter-spacing:.06em;text-transform:uppercase;padding:.15rem .5rem;border-radius:100px;font-weight:600}
+.utag.active{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-bdr)}
+.utag.done{background:rgba(13,148,136,.06);color:var(--teal)}
+.utag.upcoming{background:var(--bg);color:var(--t4)}
+.chev{width:16px;height:16px;color:var(--t4);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.unit.open .chev{transform:rotate(180deg);color:var(--t3)}
+.ubody{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.4,0,.2,1)}
+.unit.open .ubody{grid-template-rows:1fr}
+.ubody-inner{overflow:hidden}
+.ucontent{padding:0;border-top:1px solid var(--bdr);overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* Table inside unit */
+.ltable{width:100%;border-collapse:collapse;font-size:.84rem}
+.ltable thead tr{background:var(--bg)}
+.ltable th{font-family:'IBM Plex Mono',monospace;font-size:.6rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--t3);padding:.55rem 1rem;text-align:left;border-bottom:1px solid var(--bdr);white-space:nowrap}
+.ltable th:first-child{width:2.5rem;text-align:center}
+.ltable .th-topic{min-width:220px}
+.ltable .th-hw{min-width:180px}
+.ltable .th-extra{min-width:180px}
+.ltable td{padding:.6rem 1rem;vertical-align:top;border-bottom:1px solid rgba(0,0,0,.03)}
+html.dark .ltable td{border-bottom:1px solid rgba(255,255,255,.03)}
+.ltable tr:last-child td{border-bottom:none}
+.ltable tr:hover{background:rgba(0,0,0,.01)}
+html.dark .ltable tr:hover{background:rgba(255,255,255,.02)}
+.ltable tr.is-test{background:var(--test-bg)}
+.ltable tr.is-test:hover{background:rgba(196,92,92,.09)}
+.ltable tr.is-quiz{background:var(--quiz-bg)}
+.ltable tr.is-review{background:var(--review-bg)}
+
+/* Staggered row reveal */
+.ltable tbody tr{opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease}
+.unit.open .ltable tbody tr{opacity:1;transform:translateY(0)}
+
+.td-num{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--t4);text-align:center;width:2.5rem}
+.td-topic{font-weight:400}
+
+/* Link groups */
+.lgroup{display:flex;flex-direction:column;gap:.25rem}
+.dlink{display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;transition:opacity .15s;line-height:1.35}
+.dlink:hover{opacity:.7;text-decoration:underline}
+.dlink.note-link{color:var(--accent);font-weight:500}
+.dlink.completed-link{color:var(--teal);font-size:.72rem;font-weight:500;position:relative}
+.dlink.completed-link.soon{color:var(--t4);cursor:default}
+.dlink.completed-link.soon:hover{opacity:1;text-decoration:none}
+.dlink.soln{color:var(--teal);font-size:.72rem}
+.dlink.vid{color:var(--rose);font-size:.72rem}
+.dlink.extra{color:var(--muted);font-size:.72rem}
+.dlink.hw-link{color:var(--t2);font-size:.8rem}
+.licon{width:11px;height:11px;flex-shrink:0;opacity:.7}
+
+/* Date next to topic */
+.topic-head{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.15rem}
+.lesson-date{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--t4);white-space:nowrap;margin-left:auto}
+
+/* Test badge */
+.test-badge{display:inline-block;background:#c45c5c;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:.62rem;
+  letter-spacing:.06em;text-transform:uppercase;padding:.18rem .5rem;border-radius:3px;font-weight:500}
+
+/* HW tag */
+.hw-tag{font-family:'IBM Plex Mono',monospace;font-size:.58rem;color:var(--t4);background:var(--bg);
+  padding:.06rem .28rem;border-radius:3px;font-weight:600;vertical-align:1px;margin-right:.2rem}
+
+/* Squiggly error */
+.hw-err{color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:.76rem;font-weight:600;
+  text-decoration:underline wavy rgba(220,38,38,.3);text-decoration-skip-ink:none;text-underline-offset:3px;cursor:help;position:relative}
+.hw-err .tip{display:none;position:absolute;left:50%;transform:translateX(-50%);
+  background:var(--err-tip-bg);border:1px solid rgba(220,38,38,.2);color:var(--err);padding:.25rem .6rem;border-radius:6px;
+  font-size:.65rem;font-family:'Outfit',sans-serif;white-space:nowrap;z-index:20;text-decoration:none;
+  box-shadow:0 4px 12px rgba(220,38,38,.08);font-weight:500;pointer-events:none}
+.hw-err .tip{bottom:calc(100% + 6px)}
+.hw-err .tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:rgba(220,38,38,.2)}
+.hw-err .tip.below{bottom:auto;top:calc(100% + 6px)}
+.hw-err .tip.below::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:rgba(220,38,38,.2)}
+.hw-err:hover .tip{display:block}
+
+/* Completed note tooltip */
+.cn-wrap{position:relative;display:inline-flex}
+.cn-tip{display:none;position:absolute;left:50%;transform:translateX(-50%);
+  background:var(--tip-bg);color:var(--tip-color);padding:.2rem .55rem;border-radius:5px;font-size:.62rem;
+  font-family:'Outfit',sans-serif;white-space:nowrap;z-index:20;pointer-events:none}
+.cn-tip{bottom:calc(100% + 5px)}
+.cn-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--tip-bg)}
+.cn-tip.below{bottom:auto;top:calc(100% + 5px)}
+.cn-tip.below::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:var(--tip-bg)}
+.cn-wrap:hover .cn-tip{display:block}
+
+/* Note title tooltip */
+.nt-wrap{position:relative;display:inline}
+.nt-tip{display:none;position:absolute;left:50%;transform:translateX(-50%);
+  background:var(--tip-bg);color:var(--tip-color);padding:.2rem .55rem;border-radius:5px;font-size:.62rem;
+  font-family:'Outfit',sans-serif;white-space:nowrap;z-index:20;pointer-events:none}
+.nt-tip{bottom:calc(100% + 5px)}
+.nt-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--tip-bg)}
+.nt-tip.below{bottom:auto;top:calc(100% + 5px)}
+.nt-tip.below::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:var(--tip-bg)}
+.nt-wrap:hover .nt-tip{display:block}
+
+/* Legend & FAB */
+.legend{margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--bdr);display:flex;flex-wrap:wrap;gap:1.5rem;font-size:.75rem;color:var(--t4)}
+.legend-item{display:flex;align-items:center;gap:.4rem}
+.legend-squig{color:var(--t2);text-decoration:underline wavy rgba(220,38,38,.3);text-underline-offset:3px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:600}
+.fab{position:fixed;bottom:1.5rem;right:1.5rem;z-index:200;background:var(--accent);color:#fff;border:none;border-radius:100px;
+  padding:.55rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:600;cursor:pointer;
+  box-shadow:var(--fab-sh);transition:all .25s;display:none;align-items:center;gap:.35rem}
+.fab:hover{transform:translateY(-2px);box-shadow:var(--fab-sh2)}
+.fab.visible{display:flex}
+
+/* ═══════════════════════════════════════════════
+   MOBILE
+   ═══════════════════════════════════════════════ */
+@media(max-width:768px){
+  .page{padding:2rem .75rem}header h1{font-size:2rem}
+  .top-bar{margin:-2rem -.75rem 1.5rem;padding:.5rem .75rem}
+  .ltable{min-width:700px}
+  .fab{bottom:1rem;right:1rem}
+  .hacts .hbtn{display:none}
+  /* Keep dark mode toggle visible on mobile */
+  .dm-toggle{font-size:.58rem;padding:.18rem .5rem}
+}
+
+/* ═══════════════════════════════════════════════
+   PRINT STYLESHEET
+   ═══════════════════════════════════════════════ */
+@media print{
+  *{color-adjust:exact;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html.dark{--bg:#fff;--white:#fff;--text:#000;--t2:#333;--t3:#666;--t4:#999;
+    --bdr:#ccc;--blue:#1e3a5f;--accent:#2563eb;--teal:#0b7d8c;--rose:#b05050;--err:#dc2626;
+    --tip-bg:#000;--tip-color:#fff;--err-tip-bg:#fff}
+  body{background:#fff!important;background-image:none!important}
+  .fab,.top-bar,.sbar,.hacts,.dm-toggle{display:none!important}
+  .page{max-width:100%;padding:0}
+  .unit{break-inside:avoid;page-break-inside:avoid;margin-bottom:1rem;border:1px solid #ccc;box-shadow:none!important;
+    opacity:1!important;transform:none!important}
+  .unit,.unit.open{display:block}
+  .ubody{display:block!important;grid-template-rows:1fr!important}
+  .ubody-inner{overflow:visible!important}
+  .unit.current{border-color:#ccc;box-shadow:none!important}
+  .ltable tbody tr{opacity:1!important;transform:none!important;transition:none!important}
+  .chev{display:none}
+  .legend{page-break-before:avoid}
+  header h1{font-size:2rem}
+  a{text-decoration:none!important}
+  .dlink:hover{text-decoration:none!important}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="top-bar">
+  <span class="lbl">Course</span>
+  <div class="ptrack"><div class="pfill" id="pf"></div></div>
+  <span class="ptxt" id="pt"></span>
+</div>
+
+<header>
+  <div class="htop">
+    <span class="chip">MCV4U</span>
+    <div class="hacts">
+      <button class="dm-toggle" id="dmBtn" onclick="toggleDark()">
+        <span class="dm-icon" id="dmIcon">☾</span> <span id="dmLabel">Dark</span>
+      </button>
+      <button class="hbtn" onclick="toggleAll()" id="expBtn">Expand All</button>
+    </div>
+  </div>
+  <h1>Calculus &amp; Vectors</h1>
+  <div class="sub">Grade 12 · University Preparation</div>
+</header>
+
+<div class="sbar">
+  <span class="si">⌕</span>
+  <input type="text" placeholder="Filter lessons..." id="si" oninput="filterL(this.value)">
+  <span class="kbd">⌘K</span>
+</div>
+
+<div id="units"></div>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-squig">Ex</span><span>Textbook answer is wrong (hover)</span></div>
+  <div class="legend-item"><span class="dlink note-link" style="pointer-events:none;font-size:.72rem">↗ Link</span><span>Blank note</span></div>
+  <div class="legend-item"><span class="dlink soln" style="pointer-events:none">✓ Soln</span><span>Solution</span></div>
+  <div class="legend-item"><span class="dlink vid" style="pointer-events:none">▶ Video</span><span>Video</span></div>
+</div>
+</div>
+
+<button class="fab" id="fab" onclick="jumpC()">↑ Current Unit</button>
+
+<script>
+// ═══════════════════════════════════════════════
+// DARK MODE
+// ═══════════════════════════════════════════════
+function applyTheme(dark) {
+  document.documentElement.classList.toggle('dark', dark);
+  document.getElementById('dmIcon').textContent = dark ? '☀︎' : '☾';
+  document.getElementById('dmLabel').textContent = dark ? 'Light' : 'Dark';
+}
+function toggleDark() {
+  const going = !document.documentElement.classList.contains('dark');
+  applyTheme(going);
+  try { localStorage.setItem('mcv4u-dark', going ? '1' : '0'); } catch(e){}
+}
+(function(){
+  let dark = false;
+  try {
+    const saved = localStorage.getItem('mcv4u-dark');
+    if (saved !== null) { dark = saved === '1'; }
+    else { dark = window.matchMedia('(prefers-color-scheme: dark)').matches; }
+  } catch(e) {
+    dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  applyTheme(dark);
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    try { if (localStorage.getItem('mcv4u-dark') !== null) return; } catch(ex){}
+    applyTheme(e.matches);
+  });
+})();
+
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+const CURRENT_UNIT = 3;
+const TOTAL_UNITS = 7;
+
+// ═══════════════════════════════════════════════
+// ERRATA
+// ═══════════════════════════════════════════════
+const ERRATA_BY_DAY = {
+  "1.2": ["7"],"1.4": ["16"],"1.7": ["10c"],
+  "2.8": ["13"],"2.11":["7"],"2.11x":["2a"],
+  "3.1": ["4b"],"3.5": ["20"],
+  "4.3x":["9d"],"4.5": ["8a"],"4.7": ["16"],
+  "5.2": ["2"],"5.4x":["4cd"],"5.8x":["2"],
+  "6.1": ["5","4","10","13"],"6.2": ["3"],"6.6": ["13"],"6.8": ["29"],
+  "7.1": ["10"],"7.8": ["4a"],"7.15":["5"],"7.18":["9a","12a"],
+};
+
+function markErrata(text, unitIdx, dayN, isExtra) {
+  const key = `${unitIdx+1}.${dayN}${isExtra ? 'x' : ''}`;
+  const errs = ERRATA_BY_DAY[key];
+  if (!errs) return text;
+  let out = text;
+  errs.forEach(q => {
+    const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`(?<=[#,]\\s*)(${escaped}[a-z]*)(?=[,\\s·]|$)`, 'g');
+    out = out.replace(re, `<span class="hw-err">$1<span class="tip">Textbook answer is incorrect</span></span>`);
+  });
+  return out;
+};
+
+// ═══════════════════════════════════════════════
+// ICONS
+// ═══════════════════════════════════════════════
+const IC = {
+  doc: `<svg class="licon" viewBox="0 0 16 16" fill="currentColor"><path d="M4 4h5v2H4zm0 3h8v2H4zm0 3h6v2H4zm9-9H3a1 1 0 00-1 1v12a1 1 0 001 1h10a1 1 0 001-1V5l-4-4z"/></svg>`,
+  vid: `<svg class="licon" viewBox="0 0 16 16" fill="currentColor"><path d="M6 3l7 5-7 5V3z"/></svg>`,
+  soln: `<svg class="licon" viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 12L2 7.5l1.4-1.4L6.5 9.2l6.1-6.1L14 4.5z"/></svg>`,
+  link: `<svg class="licon" viewBox="0 0 16 16" fill="currentColor"><path d="M4.7 8.7l1.4-1.4 2.6 2.6-1.4 1.4A2 2 0 014.7 8.7zm6.6-6.6A2 2 0 008.7 4.7L7.3 6.1l2.6 2.6 1.4-1.4a2 2 0 000-2.6zM3.3 11.3a3 3 0 004.2 0l1.4-1.4-1.4-1.4-1.4 1.4a1 1 0 01-1.4-1.4l1.4-1.4-1.4-1.4-1.4 1.4a3 3 0 000 4.2z"/></svg>`,
+};
+
+function mkLink(text, href, type) {
+  if (!href) return `<span style="font-size:.78rem;color:var(--t2)">${text}</span>`;
+  let cls = 'dlink extra', icon = IC.doc;
+  if (type === 'vid') { cls = 'dlink vid'; icon = IC.vid; }
+  else if (type === 'soln') { cls = 'dlink soln'; icon = IC.soln; }
+  else if (type === 'extra') { cls = 'dlink extra'; icon = IC.doc; }
+  else { cls = 'dlink extra'; icon = IC.link; }
+  return `<a href="${href}" target="_blank" class="${cls}">${icon}${text}</a>`;
+}
+
+// ═══════════════════════════════════════════════
+// COURSE DATA
+// ═══════════════════════════════════════════════
+const C = [
+{id:"u1",title:"Introduction to Calculus",status:"done",days:[
+{n:1,d:"Mon Feb 2",topic:"Introduction to Calculus",blank:"https://drive.google.com/file/d/1CEOkaTlwz_rbUQmDKeoHELp7gapxonGP/view",filled:"https://drive.google.com/file/d/12SEUzVHsx8DiDAXhtTcJ_eWQMX-g5Ow_/view",
+  hw:[{t:"Practice Questions on Today's Note"}],
+  extra:[{t:"Prerequisite Skills Practice",h:"https://drive.google.com/file/d/1pLMiGwVR55y2MVe2E7NLnV_2FuLWa-n7/view"},{t:"Course Outline",h:"https://docs.google.com/document/d/1_yPYKXsN6wgVb81CfnmPASnRtV5SGs60zj137Hijr2k/edit"},{t:"Textbook Corrections",h:"https://drive.google.com/file/d/1PmkAOQ8REabLz63bUSB__bqUDjxpb2o_/view"},{t:"Ch 1 Solutions",h:"https://drive.google.com/file/d/1rsD-yTdrHZ7j80flmT-HgWNYYWyHvFzV/view",y:"soln"},{t:"TVO Learn",h:"https://tvolearn.com/collections/courses/products/mcv4u-calculus-and-vectors-online-course",y:"vid"},{t:"Ms. Havrot's Videos",h:"https://www.youtube.com/c/MsHavrotsCanadianUniversityMathPrerequisites/playlists",y:"vid"}]},
+{n:2,d:"Tues Feb 3",topic:"Rationalising",blank:"https://drive.google.com/file/d/1tFgsyRUnaa69TM-Uk8jU1WJAYYquzlwM/view",filled:"https://drive.google.com/file/d/1tz5bq51ajTdxCZn3nz72G0CS3qnClTQH/view",
+  hw:[{t:"§1.1 p. 9 #3adf, 4b, 7"}],hwSoln:[],
+  extra:[{t:"Vid: What are These Symbols?",h:"https://www.youtube.com/watch?v=fUCEg3HznX4",y:"vid"},{t:"Khan: Rationalising",h:"https://www.youtube.com/watch?v=ENIUcjdPO54",y:"vid"}]},
+{n:3,d:"Weds Feb 4",topic:"Slope of a Tangent",blank:"https://drive.google.com/file/d/1tW2Ldvmn59l9axOxtGeP9OAn5N9yc4uL/view",filled:"https://drive.google.com/file/d/1OjUodFfi3iVK9s7oMX2a17zYHCyPTMA3/view",
+  hw:[{t:"§1.2 p. 18 #1a, 3d, 8ac, 10ab, 11e, 15"}],
+  extra:[{t:"Tangent Line Sim",h:"https://www.desmos.com/calculator/8gstpreekm"},{t:"More Prerequisite Skills",h:"https://drive.google.com/file/d/1pGeXlevOSndqIZAXqKWpsm9HraN3KsNR/view"}]},
+{n:4,d:"Thurs Feb 5",topic:"Rates of Change",blank:"https://drive.google.com/file/d/1uBDaDgLu3bhVx0Qd9G-dSJ2x-S_xKaGM/view",filled:"https://drive.google.com/file/d/1nDwWtyFy5rLu6RjUodpBhcJUuwY0wH0P/view",
+  hw:[{t:"§1.3 p. 29 #1, 8, 12, 16, 18"}],hwSoln:[{t:"Soln: #18",h:"https://drive.google.com/file/d/1BRNaBPA7aa9bzGiRR73kDrf7uNcbyt8V/view",y:"soln"}],
+  extra:[{t:"Vid: Avg & Instantaneous ROC",h:"https://www.youtube.com/watch?v=4Up5gsDeluw",y:"vid"}]},
+{n:5,d:"Fri Feb 6",topic:"Limits",blank:"https://drive.google.com/file/d/1uEUSt4RQX3emj7VOQP1Tw2GU-Z47KJff/view",filled:"https://drive.google.com/file/d/1syIwx1LsmS31--SEsOoK13Q94TGNNgFw/view",
+  hw:[{t:"§1.4 p. 37 #4def, 7, 10adf, 13, 14"}],hwSoln:[{t:"Soln: #14",h:"https://drive.google.com/file/d/1P9f2nyURSO3DUSWeW5ks71nsITsLGeyl/view",y:"soln"}],
+  extra:[{t:"Vid: Problems with Zero",h:"https://www.youtube.com/watch?v=BRRolKTlF6Q",y:"vid"},{t:"Vid: Opposite of Infinity",h:"https://www.youtube.com/watch?v=WYijIV5JrKg",y:"vid"}]},
+{n:6,d:"Mon Feb 9",topic:"Practice Quiz",blank:"https://drive.google.com/file/d/1pzpVuPs58kvyIB8LqKDXi0MByN4RWoMA/view",filled:"https://drive.google.com/file/d/1jv1F5natfbP8Qjn_pp5BVy6JRrpQGDgG/view",type:"quiz",
+  hw:[],extra:[{t:"Evaluating Limits Extra Practice",h:"https://drive.google.com/file/d/1rD_lrCh5fhuQ2iwDGK5xfXkXETs5uWZt/view"}]},
+{n:7,d:"Tues Feb 10",topic:"Properties of Limits",blank:"https://drive.google.com/file/d/1uP5myW9rRMsUK4Z_vMwazzNEm5sFv6QA/view",filled:"https://drive.google.com/file/d/1nbjGKZT4L0V4WLb-0PmN4HUnJ5sss0hV/view",
+  hw:[{t:"§1.5 p. 45 #1, 4ae, 6, 7cef, 8ade, 9e, 10c, 14, 15"}],hwSoln:[{t:"Soln: #8ad",h:"https://drive.google.com/file/d/1AWm1PQlP3Zprsm2tEdDw21pbsKnVHz73/view",y:"soln"}],
+  extra:[{t:"Common Math Symbols",h:"https://drive.google.com/file/d/14gKLpT3TMJgeAkocJ7890DwQfmMMZb0h/view"}]},
+{n:8,d:"Weds Feb 11",topic:"Continuity",blank:"https://drive.google.com/file/d/1i6OAn2cZpPKZTIKbghLmqPoh3Yq74p6K/view",filled:"https://drive.google.com/file/d/1ugLaO7OsA9H7WWxxkjfbya_scXr22DS3/view",
+  hw:[{t:"§1.6 p. 52 #4ef, 5, 15"}],extra:[]},
+{n:9,d:"Thurs Feb 12",topic:"Review",blank:"https://drive.google.com/file/d/1rNxkxs933dvsMMETiJ6nxTZWWm02CFl9/view",filled:"https://drive.google.com/file/d/1rzH-5ZQmLChfVvTXnauF_z8U6P47-7e9/view",type:"review",
+  hw:[{t:"p. 56 #2c, 3, 6, 7, 10, 11"}],
+  extra:[{t:"Skills Review (with answers)",h:"https://docs.google.com/document/d/1AynOO93RVlHficYtW8Ps4RIoUGRKZZYKzmqNIlTUtgw/edit"},{t:"Previous Student Questions",h:"https://docs.google.com/document/d/1O5LZEoQb12ocqthvjrkq0ShN1t_1hxv2VdfhSVloovI/edit"}]},
+{n:10,d:"Tues Feb 17",topic:"Limits Test",type:"test",hw:[],extra:[]},
+]},
+
+{id:"u2",title:"Derivatives",status:"active",days:[
+{n:1,d:"Weds Feb 18",topic:"Derivatives",blank:"https://drive.google.com/file/d/1v4xibSx6duoRAYxIHfA_sTCHUzAty2Tj/view",filled:"https://drive.google.com/file/d/1ek8OcYEhrwtbQb31Q4nmQznvahQyQ14g/view",
+  hw:[{t:"§2.1 p. 73 #1, 5bc, 6bd, 11, 15, 17"}],
+  extra:[{t:"Ch 2 Solutions",h:"https://drive.google.com/file/d/1rikiKVz8YBCvsK11eg_yPFwcqdhgwu10/view",y:"soln"},{t:"Vid: How you could have come up with Calculus",h:"https://www.youtube.com/watch?v=WUvTyaaNkzM",y:"vid"},{t:"Vid: Derivatives – Physics Perspective",h:"https://www.youtube.com/watch?v=ObHJJYvu3RE",y:"vid"}]},
+{n:2,d:"Thurs Feb 19",topic:"Power Rule",blank:"https://drive.google.com/file/d/1vQhkXEc2fRh_aMjEK3sDQAskK9HR2OD7/view",filled:"https://drive.google.com/file/d/1Gx0B3XG-Zl4Q0ByLpQc7GRLHGKAR2Ysk/view",
+  hw:[{t:"§2.2 p. 82 #2ace, 3df, 4f, 5b, 7d, 9f, 12, 13, 16"}],hwSoln:[{t:"Pic: 3f",h:"https://drive.google.com/file/d/1MTF15RzlH2f1I-FJe49PFYXeZ-2Ii5iz/view",y:"soln"},{t:"Pic: 9d",h:"https://drive.google.com/file/d/1mWUDEIlx7cFC-Wq-djCuo6Y01Ev67GCT/view",y:"soln"},{t:"Vid: #13",h:"https://youtu.be/llnpE7M36lY",y:"vid"}],
+  extra:[{t:"Extra: p. 82 #3c, 5c, 7b, 9cd, 11"},{t:"Khan: Power Rule",h:"https://www.youtube.com/watch?v=bRZmfc1YFsQ",y:"vid"},{t:"Vid: Power Rule Intuitive Proof",h:"https://www.youtube.com/watch?v=_yDsJ-P_X9g",y:"vid"},{t:"Vid: Power Rule Proof (Binomial)",h:"https://www.youtube.com/watch?v=OSDutJBx_TM",y:"vid"}]},
+{n:3,d:"Fri Feb 20",topic:"Product Rule",blank:"https://drive.google.com/file/d/1vUgCbhmTSx9bCH4mSVReob9fI2J148rJ/view",filled:"https://drive.google.com/file/d/1oFf06I7RfoFEgF47M9x_ks52C6ETzZuC/view",
+  hw:[{t:"§2.3 p. 90 #1d, 5e, 7b, 8b, 9, 12"}],hwSoln:[{t:"Pic: 2a",h:"https://drive.google.com/file/d/1n_62LUePQEZv0HDKmYc5qs_aFNK0lwxW/view",y:"soln"},{t:"Pic: 5e",h:"https://drive.google.com/file/d/1a9zHfReL0wq7IMJfURroBafQIjv6S2vh/view",y:"soln"},{t:"Vid: #12",h:"https://youtu.be/AiG3THgqFcE",y:"vid"}],
+  extra:[{t:"Extra: p. 90 #2bd, 3, 5b, 6"}]},
+{n:4,d:"Mon Feb 23",topic:"Speed Quiz I",blank:"https://drive.google.com/file/d/1_0jigd-QkYzePAd8AEp1p6ROrCuy3Idr/view",filled:"https://drive.google.com/file/d/1xlzkIQ7x2R3xXtOmr4iDetoY84LaYoId/view",type:"quiz",hw:[],extra:[]},
+{n:5,d:"Tues Feb 24",topic:"Quotient Rule",blank:"https://drive.google.com/file/d/1BDPrjwJA_k28PLU01tvkvMvwQXTdIWye/view",filled:"https://drive.google.com/file/d/1vv5iTBlEmz-pBvj8YozUKT1zUmaJLjGW/view",
+  hw:[{t:"§2.4 p. 97 #4e, 5d, 7, 13"}],
+  extra:[{t:"Extra: p. 97 #4ac, 5a, 8"},{t:"Extra Quotient Practice",h:"https://drive.google.com/file/d/1nHE41aCVRnZ6ukcvCEiSHP2XILvNeYtE/view"},{t:"Solutions",h:"https://drive.google.com/file/d/1HEyi7EWp1wmjKERy8tueDUI2Jyl490hd/view",y:"soln"}]},
+{n:6,d:"Weds Feb 25",topic:"Chain Rule",blank:"https://drive.google.com/file/d/1wDFuzQBrroYIHmnaq0nAYt5fph1ScF1Y/view",filled:"https://drive.google.com/file/d/1wF0SzI9QP9UVh4hAsZrwXex8HHtVAPxS/view",
+  hw:[{t:"§2.5 p. 105 #1be, 5c, 8c, 13b, 19"}],hwSoln:[{t:"Pic: 19",h:"https://drive.google.com/file/d/1BPnjxnysRJaIPydaaAgVUL7D5fbI6VZK/view",y:"soln"},{t:"Vid: 5e",h:"https://youtu.be/sQN52nrejlE",y:"vid"}],
+  extra:[{t:"Extra: p. 105 #4df, 5e, 7, 8a, 16, 17"},{t:"Extra Chain Rule Practice",h:"https://drive.google.com/file/d/1KLYOO7w4c005uNGD1pgZyjwymiZcBo3K/view"},{t:"Solutions",h:"https://drive.google.com/file/d/1b-D3wOwm4IQZ9xMzbM7yMAeiWUDPZU33/view",y:"soln"}]},
+{n:7,d:"Thurs Feb 26",topic:"Chapter 2 Review",blank:"https://drive.google.com/file/d/1zlv0dxqaYKtuXVxCW3LVB-unBTUKWqHM/view",filled:"https://drive.google.com/file/d/1Bdunu6LZ-G8dmZeY7wtWNjHIQ75vEED0/view",type:"review",
+  hw:[{t:"p. 110 #5d, 12, 15, 21, 23"}],
+  extra:[{t:"Speed Quiz II",h:"https://drive.google.com/file/d/1zoCUcBJ7jHENWyVXivyPoMWDj07S1OtL/view"},{t:"SQ II Solutions",h:"https://drive.google.com/file/d/1zxIC6odN_zmEr5PbHDt88SKV3D3T85ey/view",y:"soln"},{t:"Extra: p. 110 #4e, 5a, 17"},{t:"Review Exercises",h:"https://docs.google.com/document/d/17lUJ8kHOadJnKZwr_ykgJ0Kh9saQNnjy7Ag4YVqDiO4/edit"}]},
+{n:8,d:"Fri Feb 27",topic:"Exponentials & Logarithms",blank:"https://drive.google.com/file/d/1wIE_7TENi1ZPy58EqKnVD_kLiqM1sKrC/view",filled:"https://drive.google.com/file/d/1Gnl1Sm14U3QLH5hLK13NP4sj9nY05eNT/view",
+  hw:[{t:"§5.1 p. 232 #2bf, 3f, 5a, 13"}],hwSoln:[{t:"Pic: 13",h:"https://drive.google.com/file/d/1CcwioXmNsXPoG6vfRTL2PZmDGFtDxnb0/view",y:"soln"}],
+  extra:[{t:"Ch 5 Solutions",h:"https://drive.google.com/file/d/16wpF1_xi-dJ9M8JeoMsF_xuxkzc6DZ-t/view",y:"soln"},{t:"Extra: p. 232 #2e, 3cd, 4bc"}]},
+{n:9,d:"Mon Mar 2",topic:"General Exponentials",blank:"https://drive.google.com/file/d/1wRiPgi70eqqC7rj9k-DudFycb61A9VdA/view",filled:"https://drive.google.com/file/d/1G0U1eKBv93tBNDKLWHNT4cep1GImb3Da/view",
+  hw:[{t:"§5.2 p. 240 #2ac, 4, 8"}],
+  extra:[{t:"Extra: p. 240 #1bf, 2d, 4, 6"},{t:"Proof of (1+1/x)^x",h:"https://drive.google.com/file/d/1Cj0_pUpGPiYXTIHVsvmsspSek5H2jd9_/view"}]},
+{n:10,d:"Tues Mar 3",topic:"Derivatives of Sine & Cosine",blank:"https://drive.google.com/file/d/1wgq_ufQNbXiqne4ezdKdcKYepguWB9hD/view",filled:"https://drive.google.com/file/d/1UQC9xftsAEm87ScIbJ0W4bfnoaDh9txI/view",
+  hw:[{t:"§5.4 p. 256 #1cj, 2d, 3d, 6c, 9"}],extra:[{t:"Extra: p. 256 #1gh, 2bc, 3ab, 10"}]},
+{n:11,d:"Weds Mar 4",topic:"Derivatives of Tangent",blank:"https://drive.google.com/file/d/1wxxjecR4X6DsCa8vqeLJ0JC-VHX01G4h/view",filled:"https://drive.google.com/file/d/1HWtIn6AC8gasDG7ojTXty3K3QmDs86zy/view",
+  hw:[{t:"§5.5 p. 260 #1f, 3df, 6, 7"}],extra:[{t:"Extra: p. 260 #1d, 2a, 8, 10"}]},
+{n:12,d:"Thurs Mar 5",topic:"Review",type:"review",
+  hw:[{t:"p. 264 #13–16, 23"}],
+  extra:[{t:"Derivative Formulas to Memorize",h:"https://drive.google.com/file/d/1k_IdgAP7xrH45xMA3RRzH7ka4opjBIJN/view"},{t:"Extra Trig Practice",h:"https://drive.google.com/file/d/1ilMbm-KD56rqVjnH4sI3KiOy-gbyX_QT/view"},{t:"Trig Soln",h:"https://drive.google.com/file/d/1_P_STikhKcXJsnM8UrzzbQiCWreOQ-GN/view",y:"soln"},{t:"Extra Exp Practice",h:"https://drive.google.com/file/d/1QXxqfs03QDVBDVOGYbFjHJf8Ng8ijhCA/view"},{t:"Exp Soln",h:"https://drive.google.com/file/d/16gRUV4SJQComYa952G8PXUYT01dQaGLu/view",y:"soln"}]},
+{n:13,d:"Fri Mar 6",topic:"Review",type:"review",hw:[],
+  extra:[{t:"Practice Test",h:"https://drive.google.com/file/d/1QYJWazCWoPL_vErJcLlWilBbJTMtNEX0/view"},{t:"Solutions",h:"https://drive.google.com/file/d/1gPOEyUnMeT7dp3onjSM48Rd_LRfYplQx/view",y:"soln"}]},
+{n:14,d:"Mon Mar 9",topic:"Derivatives Test",type:"test",hw:[],extra:[]},
+]},
+
+{id:"u3",title:"Applications",status:"upcoming",days:[
+{n:1,d:"Tues Mar 10",topic:"Second Derivatives",blank:"https://drive.google.com/file/d/1xFSxR-PTyrbFBcAcTYa0-PrXr_zgGvWZ/view",filled:"https://drive.google.com/file/d/1-Uq9_D4R_FtZia08zedjT7sra1yHuDWf/view?",
+  hw:[{t:"§3.1 p. 127 #2c, 3f, 4b, 8, 15"}],
+  extra:[{t:"Higher Order Practice",h:"https://drive.google.com/file/d/1HrNbVYMf5v3Dx1ANZekynJP5S20LrTcm/view"},{t:"Solutions",h:"https://drive.google.com/file/d/1aiSS6RqFO7e8VLdwR8M5BidXkaH9jR0T/view",y:"soln"},{t:"Ch 3 Solutions",h:"https://drive.google.com/file/d/1rnxv-ca48bouLZfIpg-abLJP4MiVyI3W/view",y:"soln"},{t:"Vid: Half Derivatives?",h:"https://www.youtube.com/watch?v=2dwQUUDt5Is",y:"vid"}]},
+{n:2,d:"Weds Mar 11",topic:"Extrema",blank:"https://drive.google.com/file/d/1xndbnNp7D7qtrdjGoHm8bDy6dIEJlanS/view",filled:"https://drive.google.com/file/d/1Xt_iGWGBn3jyseiMos3vI0SM--OfT1ss/view?",
+  hw:[{t:"§3.2 p. 135 #2b, 7, 14"}],extra:[{t:"Extra: p. 135 #2cd, 4de, 6, 12"}]},
+{n:3,d:"Thurs Mar 12",topic:"Optimization",blank:"https://drive.google.com/file/d/1c7-cUTrrHatYajuCiFCz2EkqPsuUrAQu/view",filled:"https://drive.google.com/file/d/1h4KZs63Wp15yRe5Y3-huAdlMNpCPEkXJ/view?",
+  hw:[{t:"§3.3/3.4 p. 145 #7, 11, 20 · p. 151 #4, 7, 17"}],hwSoln:[{t:"Pic: p.151 #17",h:"https://drive.google.com/file/d/1C4IJiwG78w3Pb8HehZDPCqbzrxXyFCl6/view",y:"soln"}],
+  extra:[{t:"Extra: p. 145 #5, 9, 16 · p. 151 #1, 12"}]},
+{n:4,d:"Fri Mar 13",topic:"Practice Quiz",blank:"https://drive.google.com/file/d/1yeucg4kBUfdvKWWcurzGovBJsRXUbNRr/view",filled:"https://drive.google.com/file/d/1yfi0YJbgGxadKgm1boHGb16CfUJ4Zn8t/view",type:"quiz",hw:[],extra:[]},
+{n:5,d:"Mon Mar 23",topic:"Optimization with Trigonometry",blank:"https://drive.google.com/file/d/1yhni2-yiJlC2qkjjHPWQLl2lufQfxbo4/view",
+  hw:[{t:"p. 265 #18, 19, 20"}],extra:[{t:"Extra: p. 265 #22"}]},
+{n:6,d:"Tues Mar 24",topic:"Optimization with Exponentials",blank:"https://drive.google.com/file/d/1z-YAj0pjaOd7W90kShuXTQYK2PfaCAKR/view",
+  hw:[{t:"§5.3 p. 245 #3, 6, 14"}],hwSoln:[{t:"Pic: 3abc",h:"https://drive.google.com/file/d/1D6Owq42fw5HQiYiK9B4qvY_EbX8rShTG/view",y:"soln"},{t:"Pic: 8",h:"https://drive.google.com/file/d/1DEXqYF-vSA17kzCeif9jo8FZxMsfZWKP/view",y:"soln"},{t:"Pic: 14",h:"https://drive.google.com/file/d/1DDXS3bCJLW9Ozu6DFZVSmXpGCtJvh66a/view",y:"soln"}],
+  extra:[{t:"Extra: p. 245 #5, 8, 13"},{t:"Optimization Word Problems I & II",h:"https://drive.google.com/file/d/1yxtVhmDwH00taEaJOox6PBVd8ty5cPC_/view"},{t:"Solutions",h:"https://drive.google.com/file/d/1zC-vMk7Z8qysGfmtlQeE6Ljl8nsCY6et/view",y:"soln"}]},
+{n:7,d:"Weds Mar 25",topic:"Review",blank:"https://docs.google.com/document/d/1fuiOIl16YLOVZimFPP_Blt873vaLHQKWoDWdY8XQIeo/edit",type:"review",
+  hw:[{t:"p. 156 #1, 4, 6, 10a, 19, 26a · p. 264 #11, 21"}],
+  extra:[{t:"Review II",h:"https://drive.google.com/file/d/1zCxuo5GLJ9S4UoF52uM_fYdHDB6Xo1jm/view"},{t:"Solutions",h:"https://drive.google.com/file/d/1V86ZRh3K8emmQ0r7lBBiAoyQD2O-CdaY/view",y:"soln"},{t:"Challenge Questions",h:"https://drive.google.com/file/d/1Nu439TXCEewUXg0-TUMxj4-CwknZphow/view"},{t:"Challenge Soln",h:"https://drive.google.com/file/d/1z03bafYRWDlhEeE8fMRPQ2TQBpB2f_ET/view",y:"soln"}]},
+{n:8,d:"Thurs Mar 26",topic:"Review",type:"review",hw:[],extra:[]},
+{n:9,d:"Fri Mar 27",topic:"Applications Test",type:"test",hw:[],extra:[]},
+]},
+
+{id:"u4",title:"Curve Sketching",status:"upcoming",days:[
+{n:1,d:"Mon Mar 30",topic:"Increasing & Decreasing",blank:"https://drive.google.com/file/d/1z_kWVUoSxeVfKHwtd3Ir9DEKEXyGGtYE/view",
+  hw:[{t:"§4.1 p. 169 #5, 7, 14"}],extra:[{t:"Ch 4 Solutions",h:"https://drive.google.com/file/d/1rm9n4p-m-U65H0T5ktX73Lm8apFrZLuq/view",y:"soln"},{t:"Extra: p. 169 #6, 9ac"}]},
+{n:2,d:"Tues Mar 31",topic:"Critical Points",blank:"https://drive.google.com/file/d/1gu3n4VSk7zb6F6DwTRT7hpF91FrTdDUN/view",
+  hw:[{t:"§4.2 p. 178 #3a, 5c, 10, 14c"}],extra:[{t:"Extra: p. 178 #3b, 7ac, 12, 14ab"}]},
+{n:3,d:"Weds Apr 1",topic:"Asymptotes",blank:"https://drive.google.com/file/d/1And3s2piB753FpP-0vqUS-sNpGjzLGkA/view",
+  hw:[{t:"§4.3 p. 193 #3a, 4b, 5c, 7a, 12b"}],extra:[{t:"Extra: p. 193 #4d, 5b, 9d"}]},
+{n:4,d:"Thurs Apr 2",topic:"Asymptotes II",blank:"https://drive.google.com/file/d/1-2Fa4qiE82m8CRKYGyFN__qBoLAuZSnf/view",
+  hw:[{t:"p. 193 #4d, 5d, 7d, 14"}],extra:[{t:"Asymptotes Practice",h:"https://drive.google.com/file/d/1c2q2sy5jw6G17XPACSTZxmSAg8tbBVux/view"},{t:"Solutions",h:"https://drive.google.com/file/d/1yVA_nV_tFp1dZk5ia34MEojye4wOWLGE/view",y:"soln"}]},
+{n:5,d:"Tues Apr 7",topic:"Concavity",blank:"https://drive.google.com/file/d/1-FpRpyYLCvB2BoY1hDv2xkixLsgVoM2J/view",
+  hw:[{t:"§4.4 p. 205 #1a, 2b, 8a, 11"}],extra:[{t:"Extra: p. 205 #2d, 9"},{t:"Challenging Practice Quiz",h:"https://drive.google.com/file/d/15S57bgBwoHGkS04tM2TrMakWxe5Ob54l/view"},{t:"Solutions",h:"https://drive.google.com/file/d/1ZDBYulHCn_6zPoeauIt1o3nfZRmZH6es/view",y:"soln"}]},
+{n:6,d:"Weds Apr 8",topic:"Curve Sketching",blank:"https://drive.google.com/file/d/1-T1FAbEbGGrqhPySQ6Pys5d0Fy1YLJjq/view",
+  hw:[{t:"§4.5 p. 212 #4d, 8, 11"}],extra:[{t:"Extra: p. 212 #4g, 9"}]},
+{n:7,d:"Thurs Apr 9",topic:"Review",blank:"https://drive.google.com/file/d/1dolNwktLUw9psuDpA4ksjwVE01ayT4e3/view",filled:"https://drive.google.com/file/d/1vg64JZ4pkj_HzjVqGImNScqBNoDl3YwW/view",type:"review",
+  hw:[{t:"p. 216 #2, 4a, 5a, 7, 10bd, 16"}],extra:[{t:"Practice Quiz",h:"https://drive.google.com/file/d/11Bjd-RSbIrHciqqZZSMuu9WFYF92vWyv/view"},{t:"Solutions",h:"https://drive.google.com/file/d/13ik3Rlhka0QkTiQz9VAJfGIKExxNua4u/view",y:"soln"}]},
+{n:8,d:"Fri Apr 10",topic:"Curve Sketching Test",type:"test",hw:[],extra:[]},
+{n:9,d:"Mon Apr 13",topic:"Calculus Review",type:"review",hw:[{t:"Cumulative Review of Calculus (p. 267)"}],
+  extra:[{t:"Calculus Review",h:"https://drive.google.com/file/d/1mwrm_cdvX2IXKYitJrkPRhEtu9j-hwBt/view"},{t:"Solutions",h:"https://drive.google.com/file/d/1lGUAdxWaxME6i-LYV6KfvyAT7cLWHr3t/view",y:"soln"}]},
+{n:10,d:"Tues Apr 14",topic:"Calculus Review",type:"review",hw:[],extra:[]},
+{n:11,d:"Weds Apr 15",topic:"Calculus Midterm",type:"test",hw:[],extra:[]},
+]},
+
+{id:"u5",title:"Vectors",status:"upcoming",days:[
+{n:1,d:"Thurs Apr 16",topic:"Trig Review",blank:"https://drive.google.com/file/d/10IIac6K5kPlR-9vyDN1RFKczrbHqurMy/view",filled:"https://drive.google.com/file/d/179VlM2ZdlAOfeiLkXjibchuw_sj_NUkc/view",
+  hw:[{t:"Questions from today's note"}],extra:[{t:"Right Angle Triangle Practice",h:"https://drive.google.com/file/d/16Y5Un-D4I7pXI2ggoLVH6Xxhk7G8K5II/view"},{t:"Sine & Cosine Law Practice",h:"https://drive.google.com/file/d/16bL0usKH6n0dYL9N4L8ikaoSNCJcnVIN/view"}]},
+{n:2,d:"Fri Apr 17",topic:"Vectors",blank:"https://drive.google.com/file/d/113EHHxNeVcMAYUvYHEigEAi7hcWGvpP-/view",
+  hw:[{t:"§6.1 p. 279 #1, 2, 4, 5bce, 8ab, 9, 10"}],extra:[{t:"Vid: What is a Vector?",h:"https://www.youtube.com/watch?v=ml4NSzCQobk",y:"vid"},{t:"Vid: What is a Tensor?",h:"https://www.youtube.com/watch?v=f5liqUk0ZTw",y:"vid"}]},
+{n:3,d:"Mon Apr 20",topic:"Vector Addition",blank:"https://drive.google.com/file/d/11MODQg2eYf5sqgE3y367CCdx_0a7QJ0a/view",
+  hw:[{t:"§6.2 p. 290 #4, 6, 8, 14"}],extra:[{t:"Vid: Adding Vectors Made Simple",h:"https://www.youtube.com/watch?v=Emphi2zDMTo",y:"vid"}]},
+{n:4,d:"Tues Apr 21",topic:"Scalar Multiplication",blank:"https://drive.google.com/file/d/11ogdKC98zG3PmpJ3SBNztEa1gjNyHWtG/view",
+  hw:[{t:"§6.3 p. 298 #1, 5bc, 12, 20"}],extra:[{t:"Extra: p. 298 #4cde, 7, 16, 21"}]},
+{n:5,d:"Weds Apr 22",topic:"Properties of Vectors",blank:"https://drive.google.com/file/d/11v4F0Gu4nAiiOAGkxKkd4eo6_oSOXp48/view",
+  hw:[{t:"§6.4 p. 306 #2, 4, 8a"}],extra:[{t:"Vid: Properties of Vectors",h:"https://www.youtube.com/watch?v=9F1cZUwQg9A",y:"vid"}]},
+{n:6,d:"Thurs Apr 23",topic:"Dimensions",blank:"https://drive.google.com/file/d/12NlA5ODYTAErgRvpSow06FszPcokCTu5/view",
+  hw:[{t:"§6.5 p. 316 #2, 6, 9, 14, 19"}],extra:[{t:"3D Desmos",h:"https://www.desmos.com/3d"}]},
+{n:7,d:"Fri Apr 24",topic:"Practice Quiz",blank:"https://drive.google.com/file/d/12aZUBLJ-ghzV7b8Iks_6cH4qlNg0_mdG/view",filled:"https://drive.google.com/file/d/19Ym81X8Mr3VkheJk-GNkO1CWUUaBOtJS/view",type:"quiz",hw:[],extra:[]},
+{n:8,d:"Tues Apr 28",topic:"Operations with Vectors",blank:"https://drive.google.com/file/d/12sPsNYuT7pCyoUNpdeoIjxZH9HBRRyS_/view",
+  hw:[{t:"§6.6/6.7 p. 324 #4, 5, 7b, 15 · p. 332 #3, 5b, 8"}],extra:[{t:"Extra: p. 324 #1, 2, 11 · p. 332 #2, 4ac, 14"}]},
+{n:9,d:"Weds Apr 29",topic:"Linear Combinations",blank:"https://drive.google.com/file/d/12wnnhVoazEt4RvQVSyLnaG_jiGLEmHds/view",
+  hw:[{t:"§6.8 p. 340 #2, 6, 10, 11, 14"}],extra:[{t:"Vid: Lin. Combos, Span & Basis",h:"https://www.youtube.com/watch?v=k7RM-ot2NWY",y:"vid"},{t:"Extra: p. 340 #1, 7b, 13a"}]},
+{n:10,d:"Thurs Apr 30",topic:"Review",blank:"https://drive.google.com/file/d/130Rt6ltSbQmULNJaOFhRi_4aIT5gf2Fv/view",filled:"https://drive.google.com/file/d/19khpDzZhkdkNR0w5dTuIt7fpIt7trQjC/view",type:"review",
+  hw:[{t:"p. 344 #1, 2a, 4, 10, 17"}],extra:[]},
+{n:11,d:"Fri May 1",topic:"Vectors Test",type:"test",hw:[],extra:[]},
+]},
+
+{id:"u6",title:"Vector Products",status:"upcoming",days:[
+{n:1,d:"Mon May 4",topic:"Forces & Velocities",blank:"https://drive.google.com/file/d/13txrYRDKrh8wBJpzwFC3LJkl1nA-e4We/view",
+  hw:[{t:"§7.1/7.2 p. 362 #1, 3, 5, 6, 11 · p. 369 #1, 2, 4, 6, 10, 13"}],extra:[]},
+{n:2,d:"Tues May 5",topic:"The Dot Product",blank:"https://drive.google.com/file/d/13zw1cjFH-GzX9ut8RmAGeNMoL10xN188/view",
+  hw:[{t:"§7.3 p. 377 #3, 5, 7c, 12a, 16"}],extra:[{t:"Vid: Dot Products & Duality",h:"https://www.youtube.com/watch?v=LyGKycYT2v0",y:"vid"}]},
+{n:3,d:"Weds May 6",topic:"Dot Product Algebraically",blank:"https://drive.google.com/file/d/14Q9Y2qqMPNSl048dnpsI0e9Pbwi1pHXu/view",
+  hw:[{t:"§7.4 p. 385 #1, 6d, 7a, 14, 19"}],extra:[]},
+{n:4,d:"Thurs May 7",topic:"Vector Projections",blank:"https://drive.google.com/file/d/14gv6YYktZimiaZg6jYJim0gbm53LArh3/view",
+  hw:[{t:"§7.5 p. 398 #1, 8a, 11, 14"}],extra:[{t:"Extra: p. 398 #3, 7b, 10, 15a"}]},
+{n:5,d:"Fri May 8",topic:"Practice Quiz",blank:"https://drive.google.com/file/d/14hyEHvxYPAHXHHs7vItm7i-OkuExJIoL/view",filled:"https://drive.google.com/file/d/1BPpMFlXB0Lq5s4JaHP6fS6bcl_H1NUWS/view",type:"quiz",hw:[],extra:[]},
+{n:6,d:"Mon May 11",topic:"Cross Product",blank:"https://drive.google.com/file/d/15-nOksqdc7j2FCb0cwIApqP8MNah1vWb/view",
+  hw:[{t:"§7.6 p. 407 #1, 4c, 5, 13"}],extra:[{t:"Extra: p. 407 #4f, 7, 9ac"},{t:"Cross Product Interactive",h:"http://mechanicsmap.psu.edu/websites/A1_vector_math/A1-4_crossproduct/crossproduct.html"},{t:"Vid: Cross Product Explained",h:"https://www.youtube.com/watch?v=eu6i7WJeinw",y:"vid"},{t:"Determinant Ref",h:"https://drive.google.com/file/d/19ORhXlqzssFFUJC-xJXSF4NhRKjcMDbu/view"}]},
+{n:7,d:"Tues May 12",topic:"Applications of Products",blank:"https://drive.google.com/file/d/14vDlsJ62JlYjTuhf7VImB_JJlp2yGclv/view",
+  hw:[{t:"§7.7 p. 414 #1, 2, 5a, 8"}],extra:[]},
+{n:8,d:"Weds May 13",topic:"Review",blank:"https://drive.google.com/file/d/150hS1T6hvDfYsFcW8byP8mc3iJA1jOES/view",filled:"https://drive.google.com/file/d/152xAlm5y05rQIi8DR-Ii57xCXaqBTPdk/view",type:"review",
+  hw:[{t:"p. 418 #1, 2ad, 5, 7, 9, 13, 16a, 22, 29, 32"}],extra:[]},
+{n:9,d:"Thurs May 14",topic:"Work Period",hw:[],extra:[]},
+{n:10,d:"Fri May 15",topic:"Vector Products Test",type:"test",hw:[],extra:[]},
+]},
+
+{id:"u7",title:"Lines & Planes",status:"upcoming",days:[
+{n:1,d:"Tues May 19",topic:"Vector & Parametric Equations of Lines 2D",blank:"https://drive.google.com/file/d/15hIfYVHW3f04gqJsWHyO-EVK0JCi294b/view",
+  hw:[{t:"§8.1 p. 433 #1, 4, 5a, 10"}],extra:[{t:"Extra: p. 433 #2, 7, 14"}]},
+{n:2,d:"Weds May 20",topic:"Cartesian Equation of a Line",blank:"https://drive.google.com/file/d/1AAwbGf6JdmXnvj9MFRJ2xLGtVMdBV-RA/view",
+  hw:[{t:"§8.2 p. 443 #1, 3c, 8, 14"}],extra:[{t:"Extra: p. 443 #4ad, 5, 6"}]},
+{n:3,d:"Thurs May 21",topic:"Equations of a Line in 3D",blank:"https://drive.google.com/file/d/16x1702EolgWHddTUr4axImlv7reK5Sdt/view",
+  hw:[{t:"§8.3 p. 449 #1d, 4, 6, 13"}],extra:[{t:"Extra: p. 449 #1ef, 8"}]},
+{n:4,d:"Fri May 22",topic:"Vector & Parametric Equations of a Plane",blank:"https://drive.google.com/file/d/171rekGZDHg1c6QlG8eB33qt_3AVTtFTG/view",
+  hw:[{t:"§8.4 p. 459 #3, 5, 7, 15"}],extra:[{t:"Extra: p. 459 #1, 4a, 10"}]},
+{n:5,d:"Mon May 25",topic:"Practice Quiz",blank:"https://drive.google.com/file/d/17Cbnx_ZLIZG3oSNi7saBv2iodAjTsQ3q/view",filled:"https://drive.google.com/file/d/17CAb6US3US1C6IIaOL0YV1vSJIiDWdZv/view",type:"quiz",hw:[],extra:[]},
+{n:6,d:"Tues May 26",topic:"Cartesian Equation of a Plane",blank:"https://drive.google.com/file/d/17iO69BbOo7LMacXwRUYPlksJAQkMuuCW/view",
+  hw:[{t:"§8.5 p. 468 #1ab, 4a, 7, 14"}],extra:[{t:"Extra: p. 468 #2ab, 8, 9a"}]},
+{n:7,d:"Weds May 27",topic:"Sketching Planes in R³",blank:"https://drive.google.com/file/d/17k4tRm0K99PfEDJ3_uWr_cBqY_BfSY7z/view",
+  hw:[{t:"§8.6 p. 476 #1, 2, 3, 6, 7, 8ad, 9"}],extra:[]},
+{n:8,d:"Thurs May 28",topic:"Intersection of a Line & Plane",blank:"https://drive.google.com/file/d/18-JQFWC7likYHvylLLcUOn6yyAlw1pwR/view",
+  hw:[{t:"§9.1 p. 496 #2b, 4a, 7a, 10"}],extra:[]},
+{n:9,d:"Fri May 29",topic:"Ch 8 Review / Work Period",type:"review",hw:[{t:"p. 480 #2, 3a, 4, 8, 14d, 15a, 17, 22, 25, 34"}],extra:[]},
+{n:10,d:"Mon Jun 1",topic:"Intersection of Two Lines",blank:"https://drive.google.com/file/d/18MOHSOe0-y1Y1e3Mwi3p3OMGvJfN5Y8T/view",
+  hw:[{t:"§9.1 p. 496 #8b, 9, 10, 11a, 15, 18"}],hwSoln:[{t:"Soln: #18",h:"https://drive.google.com/file/d/1dcDnXJG4GZL68pFjKWbRx1KAN-CCcv4v/view",y:"soln"}],extra:[]},
+{n:11,d:"Tues Jun 2",topic:"Systems of Equations",blank:"https://drive.google.com/file/d/18KybVNxvDGAqR6Drl2w8p73jEgjFqdmd/view",
+  hw:[{t:"§9.2 p. 507 #1, 2, 5b, 9, 12f, 14"}],extra:[]},
+{n:12,d:"Weds Jun 3",topic:"Matrices",blank:"https://drive.google.com/file/d/18XwTf7woL21BPHB3VktITLGwXDK07htb/view",hw:[],
+  extra:[{t:"More Practice with Matrices",h:"https://drive.google.com/file/d/18YkKECAEe3U6FTtBPYeMootarpuCuMZN/view"},{t:"Solutions",h:"https://drive.google.com/file/d/18n-yq8Yvj4NwiXKQeWTrvRrs1docIyu7/view",y:"soln"}]},
+{n:13,d:"Thurs Jun 4",topic:"Intersection of 2 Planes",blank:"https://drive.google.com/file/d/19OKY5cF5y7hgVYHctwwVPqzpsZ8JCBZo/view",
+  hw:[{t:"§9.3 p. 516 #1, 2, 6c"}],extra:[{t:"Practice Quiz",h:"https://drive.google.com/file/d/19JDfGQqcm11PBiA4y3PjY5TVo0_PYN4G/view"},{t:"Solutions",h:"https://drive.google.com/file/d/1JeVGr8m41_M-Gpi8FAaI6BqrVWQshZJd/view",y:"soln"}]},
+{n:14,d:"Fri Jun 5",topic:"Work Period",hw:[{t:"p. 540 #1b, 4a"}],extra:[{t:"Extra: p. 540 #3a"}]},
+{n:15,d:"Mon Jun 8",topic:"Intersection of 3 Planes",blank:"https://drive.google.com/file/d/19KVhHAiPv0LVo7bclHvZ7BE2gb0NSys9/view",
+  hw:[{t:"§9.4 p. 530 #5, 8a, 12ad, 15"}],extra:[{t:"Solving Systems CHALLENGE",h:"https://drive.google.com/file/d/19W0uQHlFyymTTNrW6E94LNb0th5dEWOh/view"},{t:"Answers",h:"https://docs.google.com/document/d/10BHpgiAC_tfiFoGN0NU9d9i34dlbkDC9iIsTBQaQXYU/edit",y:"soln"}]},
+{n:16,d:"Tues Jun 9",topic:"Distance From a Point to a Line",blank:"https://drive.google.com/file/d/19Z7xW1buepDwJI0Fekz68GJriNUeW8E6/view",
+  hw:[{t:"§9.5 p. 549 #1, 2ae, 3, 5, 8"}],extra:[]},
+{n:17,d:"Weds Jun 10",topic:"Distance From a Point to a Plane",blank:"https://drive.google.com/file/d/19bepoY_dpLJAxxuS9XT65antDYnJP0ft/view",hw:[],extra:[]},
+{n:18,d:"Thurs Jun 11",topic:"Review",type:"review",hw:[{t:"p. 552 #1–4, 7, 9a, 12a, 15, 18, 22"}],extra:[]},
+{n:19,d:"Fri Jun 12",topic:"Lines & Planes Test",type:"test",hw:[],extra:[]},
+{n:20,d:"Mon Jun 15",topic:"Vectors Review",type:"review",hw:[{t:"p. 557 #1–36"}],extra:[{t:"Exam Formula Sheet",h:"https://docs.google.com/document/d/1kkkWaVCGbptvDGI6uiT07nEnfIGNbgxHkbkKxhdalOg/edit"}]},
+{n:21,d:"Tues Jun 16",topic:"Vectors Review",type:"review",hw:[],extra:[{t:"Exam Review",h:"https://drive.google.com/file/d/19tioWMQ5SWh0fnnhh7EMr_Ov-XGLXE9f/view"},{t:"Solutions",h:"https://drive.google.com/file/d/19tYrv9IdZYuSKWCNX2duux7YpI9NbkHz/view",y:"soln"}]},
+{n:22,d:"Weds Jun 17",topic:"Vectors Review",type:"review",hw:[],extra:[]},
+]},
+];
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+
+function renderExtra(items, unitIdx, dayN) {
+  if (!items || items.length === 0) return '<span style="color:var(--t4)">—</span>';
+  return `<div class="lgroup">${items.map(i => {
+    if (!i.h) {
+      const marked = markErrata(i.t, unitIdx, dayN, true);
+      return `<span style="font-size:.78rem;color:var(--t2)">${marked}</span>`;
+    }
+    return mkLink(i.t, i.h, i.y);
+  }).join('')}</div>`;
+}
+
+function renderHW(day, unitIdx) {
+  const parts = [];
+  if (day.hw && day.hw.length > 0) {
+    day.hw.forEach(h => {
+      const marked = markErrata(h.t, unitIdx, day.n, false);
+      parts.push(`<span style="font-size:.82rem"><span class="hw-tag">HW</span>${marked}</span>`);
+    });
+  }
+  if (day.hwSoln && day.hwSoln.length > 0) {
+    day.hwSoln.forEach(s => parts.push(mkLink(s.t, s.h, s.y)));
+  }
+  if (parts.length === 0) return '<span style="color:var(--t4)">—</span>';
+  return `<div class="lgroup">${parts.join('')}</div>`;
+}
+
+function renderUnit(unit, idx) {
+  const uIdx = idx + 1;
+  const isCurrent = uIdx === CURRENT_UNIT;
+  const status = isCurrent ? 'active' : (uIdx < CURRENT_UNIT ? 'done' : 'upcoming');
+  const statusLabel = isCurrent ? 'Current' : (uIdx < CURRENT_UNIT ? 'Done' : 'Upcoming');
+
+  const rows = unit.days.map((day, di) => {
+    const rc = day.type === 'test' ? 'is-test' : day.type === 'quiz' ? 'is-quiz' : day.type === 'review' ? 'is-review' : '';
+    const tipDir = di === 0 ? 'below' : '';
+    const stagger = `style="transition-delay:${di * 0.03}s"`;
+
+    let topicHTML = '';
+    if (day.type === 'test') {
+      topicHTML = `<div class="topic-head"><span class="test-badge">${day.topic}</span><span class="lesson-date">${day.d}</span></div>`;
+    } else {
+      let titleLink = '';
+      if (day.blank) {
+        titleLink = `<span class="nt-wrap"><a href="${day.blank}" target="_blank" class="dlink note-link">${IC.doc}${day.topic}</a><span class="nt-tip ${tipDir}">Click to view blank note</span></span>`;
+      } else {
+        titleLink = `<span style="font-size:.84rem;font-weight:500">${day.topic}</span>`;
+      }
+      let completedHTML = '';
+      if (day.type !== 'test') {
+        if (day.filled) {
+          completedHTML = `<span class="cn-wrap"><a href="${day.filled}" target="_blank" class="dlink completed-link">${IC.soln}Completed Note</a></span>`;
+        } else if (day.blank) {
+          completedHTML = `<span class="cn-wrap"><span class="dlink completed-link soon">${IC.doc}Completed Note</span><span class="cn-tip ${tipDir}">Coming soon</span></span>`;
+        }
+      }
+      topicHTML = `<div class="topic-head">${titleLink}<span class="lesson-date">${day.d}</span></div>${completedHTML}`;
+    }
+
+    return `<tr class="${rc}" ${stagger}><td class="td-num">${day.n}</td><td class="td-topic">${topicHTML}</td><td>${renderHW(day, idx)}</td><td>${renderExtra(day.extra, idx, day.n)}</td></tr>`;
+  }).join('');
+
+  return `<div class="unit${isCurrent ? ' current' : ''}" data-unit="${uIdx}">
+    <div class="uhead" onclick="toggleU(this)">
+      <span class="unum">${String(uIdx).padStart(2,'0')}</span>
+      <span class="utitle">${unit.title}</span>
+      <span class="ucount">${unit.days.length} days</span>
+      <span class="utag ${status}">${statusLabel}</span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="ubody"><div class="ubody-inner"><div class="ucontent">
+      <table class="ltable">
+        <thead><tr><th>#</th><th class="th-topic">Topic</th><th class="th-hw">Homework</th><th class="th-extra">Extra Practice / Resources</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div></div></div>
+  </div>`;
+}
+
+// Build
+const container = document.getElementById('units');
+container.innerHTML = C.map((u, i) => renderUnit(u, i)).join('');
+
+// ── Toggle ──
+function toggleU(h) { h.parentElement.classList.toggle('open'); }
+
+let allExp = false;
+function toggleAll() {
+  allExp = !allExp;
+  document.querySelectorAll('.unit').forEach(u => allExp ? u.classList.add('open') : u.classList.remove('open'));
+  document.getElementById('expBtn').textContent = allExp ? 'Collapse All' : 'Expand All';
+  if (!allExp) { const c = document.querySelector(`.unit[data-unit="${CURRENT_UNIT}"]`); if (c) c.classList.add('open'); }
+}
+
+// ── Search ──
+function filterL(q) {
+  q = q.toLowerCase().trim();
+  document.querySelectorAll('.unit').forEach(u => {
+    if (!q) { u.style.display = ''; return; }
+    const m = u.textContent.toLowerCase().includes(q);
+    u.style.display = m ? '' : 'none';
+    if (m && q.length > 1) u.classList.add('open');
+  });
+}
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); document.getElementById('si').focus(); }
+  if (e.key === 'Escape') { const i = document.getElementById('si'); i.blur(); i.value = ''; filterL(''); }
+});
+
+// ── Jump ──
+function jumpC() {
+  const c = document.querySelector('.unit.current');
+  if (c) { c.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (!c.classList.contains('open')) c.classList.add('open'); }
+}
+
+// ── Scroll reveal ──
+const rObs = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); rObs.unobserve(e.target); } });
+}, { threshold: 0.05, rootMargin: '0px 0px -30px 0px' });
+
+const fObs = new IntersectionObserver(([e]) => {
+  document.getElementById('fab').classList.toggle('visible', !e.isIntersecting);
+}, { threshold: 0.1 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const c = document.querySelector(`.unit[data-unit="${CURRENT_UNIT}"]`);
+  if (c) c.classList.add('open');
+
+  const done = CURRENT_UNIT - 1;
+  document.getElementById('pf').style.width = Math.round((done / TOTAL_UNITS) * 100) + '%';
+  document.getElementById('pt').textContent = `${done}/${TOTAL_UNITS}`;
+
+  document.querySelectorAll('.unit').forEach((u, i) => {
+    u.style.transitionDelay = `${i * 0.07}s`;
+    u.style.transitionDuration = '0.55s';
+    u.style.transitionTimingFunction = 'cubic-bezier(0.16, 1, 0.3, 1)';
+    u.style.transitionProperty = 'opacity, transform';
+    rObs.observe(u);
+  });
+
+  if (c) fObs.observe(c);
+});
+</script>
+</body>
+</html>

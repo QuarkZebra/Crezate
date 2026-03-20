@@ -109,7 +109,7 @@ export default function Home() {
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200"
+            className="flex items-center gap-6 px-8 py-6 rounded-lg transition-all duration-200"
             style={{
               background: menuOpen ? 'rgba(240,236,228,0.12)' : 'rgba(240,236,228,0.06)',
               border: '1px solid rgba(240,236,228,0.1)',

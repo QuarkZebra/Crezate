@@ -96,7 +96,7 @@ export default function Home() {
       </div>
 
       {/* ── TOP NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-6 md:px-14 md:py-8">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-16 py-12 md:px-28 md:py-16">
         {/* Logo */}
         <div
           style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}

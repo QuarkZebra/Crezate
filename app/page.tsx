@@ -96,7 +96,7 @@ export default function Home() {
       </div>
 
       {/* ── TOP NAV ── */}
-      <nav className="fixed top-10 left-10 right-10 z-50 flex items-center justify-between px-16 py-12 md:px-28 md:py-16">
+      <nav className="fixed top-3 left-3 right-3 z-50 flex items-center justify-between px-16 py-12 md:px-28 md:py-16">
         {/* Logo */}
         <div
           style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}
@@ -109,7 +109,7 @@ export default function Home() {
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex items-center gap-6 px-8 py-6 rounded-lg transition-all duration-200"
+            className="flex items-center gap-2 px-6 py-4 rounded-lg transition-all duration-200"
             style={{
               background: menuOpen ? 'rgba(240,236,228,0.12)' : 'rgba(240,236,228,0.06)',
               border: '1px solid rgba(240,236,228,0.1)',
@@ -122,7 +122,7 @@ export default function Home() {
           >
             Resources
             <svg
-              width="12" height="12" viewBox="0 0 12 12" fill="none"
+              width="14" height="14" viewBox="0 0 14 14" fill="none"
               style={{
                 transform: menuOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                 transition: 'transform 0.2s ease',

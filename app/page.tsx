@@ -250,7 +250,7 @@ export default function Home() {
               color: 'var(--cream-dim)',
             }}
           >
-            Create your own path... anywhere
+            Create your own path
           </div>
         </div>
       </section>

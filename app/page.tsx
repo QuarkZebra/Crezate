@@ -188,8 +188,11 @@ export default function Home() {
       </nav>
 
       {/* ── SCROLL CONTENT ── */}
-      {/* First viewport: just the image, with a subtle scroll hint */}
-      <section className="relative z-10 h-screen flex items-end justify-center pb-10">
+      {/* First viewport: 100dvh so chevron stays above browser chrome on mobile */}
+      <section
+        className="relative z-10 flex items-end justify-center pb-10"
+        style={{ height: '100dvh' }}
+      >
         <div
           style={{
             color: 'var(--cream-bright)',

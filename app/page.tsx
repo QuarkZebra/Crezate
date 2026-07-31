@@ -189,18 +189,19 @@ export default function Home() {
 
       {/* ── SCROLL CONTENT ── */}
       {/* First viewport: just the image, with a subtle scroll hint */}
-      <section className="relative z-10 h-screen flex items-end justify-center pb-12">
+      <section className="relative z-10 h-screen flex items-end justify-center pb-10">
         <div
           style={{
-            color: 'var(--cream-dim)',
+            color: 'var(--cream-bright)',
             opacity: showScrollHint ? 1 : 0,
             transition: 'opacity 0.8s ease',
             animation: 'scrollHint 2.4s ease-in-out infinite',
             pointerEvents: 'none',
+            filter: 'drop-shadow(0 0 6px rgba(240,236,228,0.4))',
           }}
         >
-          <svg width="28" height="16" viewBox="0 0 28 16" fill="none">
-            <path d="M4 4l10 9 10-9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg width="44" height="26" viewBox="0 0 28 16" fill="none">
+            <path d="M4 4l10 9 10-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </section>
@@ -278,7 +279,7 @@ export default function Home() {
         }
         @keyframes scrollHint {
           0%, 100% { opacity: 0; transform: translateY(-6px); }
-          40%, 60% { opacity: 0.45; transform: translateY(4px); }
+          40%, 60% { opacity: 0.75; transform: translateY(4px); }
         }
       `}</style>
     </main>

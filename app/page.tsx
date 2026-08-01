@@ -160,7 +160,9 @@ export default function Home() {
                 Apps
               </div>
               <a
-                href="#"
+                href="https://310s-prep.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block px-4 py-2.5 transition-colors duration-150"
                 style={{
                   color: 'var(--cream-dim)',
@@ -178,9 +180,6 @@ export default function Home() {
                 }}
               >
                 310S Red Seal Prep
-                <span className="block text-xs mt-0.5" style={{ color: 'rgba(240,236,228,0.2)' }}>
-                  Coming soon
-                </span>
               </a>
             </div>
           )}

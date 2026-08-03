@@ -9,13 +9,32 @@ const WORDS = [
   { text: 'Create.', delay: 0 },
 ]
 
+type Dust = {
+  id: number
+  startX: number
+  startY: number
+  endX: number
+  endY: number
+  size: number
+  delay: number
+  duration: number
+}
+
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [visibleWords, setVisibleWords] = useState<number[]>([])
   const [showBrand, setShowBrand] = useState(false)
+  const [taglineProgress, setTaglineProgress] = useState(0)
+  const [dust, setDust] = useState<Dust[]>([])
+  const [dustFlying, setDustFlying] = useState(false)
+  const [resourcesBold, setResourcesBold] = useState(false)
   const wordRefs = useRef<(HTMLDivElement | null)[]>([])
   const brandRef = useRef<HTMLDivElement | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const taglineRef = useRef<HTMLDivElement | null>(null)
+  const resourcesBtnRef = useRef<HTMLButtonElement | null>(null)
+  const dustFired = useRef(false)
+  const dustTimers = useRef<number[]>([])
 
   // Close menu on outside click
   useEffect(() => {
@@ -57,6 +76,64 @@ export default function Home() {
     return () => observer.disconnect()
   }, [])
 
+  // Tagline bolden/dissolve driven by the last stretch of scroll
+  useEffect(() => {
+    function onScroll() {
+      const doc = document.documentElement
+      const max = doc.scrollHeight - window.innerHeight
+      const remaining = max - window.scrollY
+      const range = window.innerHeight * 0.45
+      const p = Math.min(1, Math.max(0, 1 - remaining / range))
+      setTaglineProgress(p)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [])
+
+  // When the tagline has fully dissolved, release dust toward the Resources menu
+  useEffect(() => {
+    if (taglineProgress >= 0.98 && !dustFired.current) {
+      dustFired.current = true
+      const t = taglineRef.current?.getBoundingClientRect()
+      const b = resourcesBtnRef.current?.getBoundingClientRect()
+      if (!t || !b) return
+      const particles: Dust[] = Array.from({ length: 32 }, (_, i) => ({
+        id: i,
+        startX: t.left + Math.random() * t.width,
+        startY: t.top + Math.random() * t.height,
+        endX: b.left + Math.random() * b.width,
+        endY: b.top + Math.random() * b.height,
+        size: 2 + Math.random() * 3,
+        delay: Math.random() * 350,
+        duration: 900 + Math.random() * 600,
+      }))
+      setDust(particles)
+      setDustFlying(false)
+      dustTimers.current.push(window.setTimeout(() => setDustFlying(true), 30))
+      dustTimers.current.push(
+        window.setTimeout(() => setResourcesBold(true), 1400)
+      )
+      dustTimers.current.push(window.setTimeout(() => setDust([]), 2200))
+    }
+    // Scrolling back up resets the sequence so it can replay
+    if (taglineProgress < 0.3 && dustFired.current) {
+      dustFired.current = false
+      dustTimers.current.forEach(clearTimeout)
+      dustTimers.current = []
+      setDust([])
+      setDustFlying(false)
+      setResourcesBold(false)
+    }
+  }, [taglineProgress])
+
+  const boldP = Math.min(1, taglineProgress / 0.5)
+  const dissolveP = Math.max(0, (taglineProgress - 0.5) / 0.5)
+
   return (
     <main className="relative">
       {/* ── FIXED BACKGROUND ── */}
@@ -64,7 +141,7 @@ export default function Home() {
       <div
         className="fixed inset-0 z-0 md:hidden"
         style={{
-          backgroundImage: 'url(/hero-m.png)',
+          backgroundImage: 'url(/hero-m-v2.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center 20%',
           backgroundRepeat: 'no-repeat',
@@ -81,7 +158,7 @@ export default function Home() {
       <div
         className="fixed inset-0 z-0 hidden md:block"
         style={{
-          backgroundImage: 'url(/hero-d.png)',
+          backgroundImage: 'url(/hero-d-v2.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center 30%',
           backgroundRepeat: 'no-repeat',
@@ -94,6 +171,24 @@ export default function Home() {
           }}
         />
       </div>
+
+      {/* ── DUST PARTICLES ── */}
+      {dust.map((p) => (
+        <div
+          key={p.id}
+          className="fixed z-[60] rounded-full pointer-events-none"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: 0,
+            top: 0,
+            background: 'var(--cream)',
+            transform: `translate(${dustFlying ? p.endX : p.startX}px, ${dustFlying ? p.endY : p.startY}px)`,
+            opacity: dustFlying ? 0 : 0.9,
+            transition: `transform ${p.duration}ms cubic-bezier(0.3, 0.6, 0.25, 1) ${p.delay}ms, opacity ${p.duration}ms ease-in ${p.delay + p.duration * 0.4}ms`,
+          }}
+        />
+      ))}
 
       {/* ── TOP NAV ── */}
       <nav className="fixed top-3 left-3 right-3 z-50 flex items-center justify-between px-16 py-12 md:px-28 md:py-16">
@@ -108,21 +203,30 @@ export default function Home() {
         {/* Resources dropdown */}
         <div className="relative" ref={menuRef}>
           <button
+            ref={resourcesBtnRef}
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex items-center gap-2 px-6 py-4 rounded-lg transition-all duration-200"
+            className="flex items-center rounded-xl transition-all duration-300"
             style={{
-              background: menuOpen ? 'rgba(240,236,228,0.12)' : 'rgba(240,236,228,0.06)',
-              border: '1px solid rgba(240,236,228,0.1)',
-              color: 'var(--cream-dim)',
+              // The global `*` reset zeroes Tailwind padding utilities, so size inline
+              gap: '10px',
+              padding: '7px 15px',
+              background: menuOpen
+                ? 'rgba(240,236,228,0.12)'
+                : resourcesBold
+                ? 'rgba(240,236,228,0.1)'
+                : 'rgba(240,236,228,0.06)',
+              border: '1.5px solid rgba(240,236,228,0.1)',
+              boxShadow: resourcesBold ? '0 0 24px rgba(240,236,228,0.2)' : 'none',
+              color: resourcesBold ? 'var(--cream-bright)' : 'var(--cream-dim)',
               fontFamily: 'var(--font-body)',
-              fontSize: '14px',
-              fontWeight: 300,
+              fontSize: 'clamp(16px, 1.5vw, 19px)',
+              fontWeight: resourcesBold ? 600 : 300,
               letterSpacing: '0.04em',
             }}
           >
             Resources
             <svg
-              width="14" height="14" viewBox="0 0 14 14" fill="none"
+              width="18" height="18" viewBox="0 0 14 14" fill="none"
               style={{
                 transform: menuOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                 transition: 'transform 0.2s ease',
@@ -134,28 +238,31 @@ export default function Home() {
 
           {menuOpen && (
             <div
-              className="absolute right-0 mt-2 py-2 rounded-xl overflow-hidden"
+              className="absolute right-0 rounded-xl overflow-hidden"
               style={{
+                marginTop: '8px',
+                padding: '10px 0',
                 background: 'rgba(18, 20, 36, 0.9)',
                 backdropFilter: 'blur(20px)',
                 border: '1px solid rgba(240,236,228,0.08)',
-                minWidth: '200px',
+                minWidth: '280px',
                 animation: 'menuIn 0.15s ease',
               }}
             >
               <div
-                className="px-4 py-1.5 text-xs uppercase tracking-widest"
-                style={{ color: 'rgba(240,236,228,0.25)', fontFamily: 'var(--font-body)', fontWeight: 300 }}
+                className="text-xs uppercase tracking-widest"
+                style={{ padding: '6px 20px', color: 'rgba(240,236,228,0.25)', fontFamily: 'var(--font-body)', fontWeight: 300 }}
               >
                 Apps
               </div>
               <a
                 href="#"
-                className="block px-4 py-2.5 transition-colors duration-150"
+                className="block transition-colors duration-150"
                 style={{
+                  padding: '16px 20px',
                   color: 'var(--cream-dim)',
                   fontFamily: 'var(--font-body)',
-                  fontSize: '14px',
+                  fontSize: '16px',
                   fontWeight: 300,
                 }}
                 onMouseEnter={(e) => {
@@ -168,7 +275,7 @@ export default function Home() {
                 }}
               >
                 310S Red Seal Prep
-                <span className="block text-xs mt-0.5" style={{ color: 'rgba(240,236,228,0.2)' }}>
+                <span className="block text-sm mt-1" style={{ color: 'rgba(240,236,228,0.2)' }}>
                   Coming soon
                 </span>
               </a>
@@ -240,14 +347,17 @@ export default function Home() {
             Crezate
           </div>
           <div
+            ref={taglineRef}
             className="mt-4"
             style={{
               fontFamily: 'var(--font-body)',
               fontSize: 'clamp(0.85rem, 1.5vw, 1.1rem)',
-              fontWeight: 200,
-              letterSpacing: '0.25em',
+              fontWeight: 200 + Math.round(boldP * 500),
+              letterSpacing: `${0.25 + dissolveP * 0.12}em`,
               textTransform: 'uppercase',
               color: 'var(--cream-dim)',
+              opacity: 1 - dissolveP,
+              filter: `blur(${dissolveP * 6}px)`,
             }}
           >
             Create your own path

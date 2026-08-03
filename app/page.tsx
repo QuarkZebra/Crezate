@@ -11,13 +11,28 @@ const WORDS = [
 
 type Dust = {
   id: number
-  startX: number
-  startY: number
-  endX: number
-  endY: number
   size: number
   delay: number
   duration: number
+  x0: number
+  y0: number
+  cx1: number
+  cy1: number
+  cx2: number
+  cy2: number
+  x1: number
+  y1: number
+}
+
+// Small seeded PRNG (mulberry32) — seeded with the current timestamp so
+// every dissolve traces a different set of curves
+function mulberry32(seed: number) {
+  return function () {
+    let t = (seed += 0x6d2b79f5)
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
 }
 
 export default function Home() {
@@ -25,8 +40,9 @@ export default function Home() {
   const [visibleWords, setVisibleWords] = useState<number[]>([])
   const [showBrand, setShowBrand] = useState(false)
   const [taglineProgress, setTaglineProgress] = useState(0)
+  const [taglinePhase, setTaglinePhase] = useState<'idle' | 'growing' | 'dissolving'>('idle')
   const [dust, setDust] = useState<Dust[]>([])
-  const [dustFlying, setDustFlying] = useState(false)
+  const [resourcesIgnite, setResourcesIgnite] = useState(false)
   const [resourcesBold, setResourcesBold] = useState(false)
   const [showScrollHint, setShowScrollHint] = useState(true)
   const wordRefs = useRef<(HTMLDivElement | null)[]>([])
@@ -34,8 +50,10 @@ export default function Home() {
   const menuRef = useRef<HTMLDivElement | null>(null)
   const taglineRef = useRef<HTMLDivElement | null>(null)
   const resourcesBtnRef = useRef<HTMLButtonElement | null>(null)
-  const dustFired = useRef(false)
-  const dustTimers = useRef<number[]>([])
+  const seqFired = useRef(false)
+  const seqTimers = useRef<number[]>([])
+  const rafId = useRef<number | null>(null)
+  const particleEls = useRef<(HTMLDivElement | null)[]>([])
 
   // Close menu on outside click
   useEffect(() => {
@@ -105,44 +123,100 @@ export default function Home() {
     }
   }, [])
 
-  // When the tagline has fully dissolved, release dust toward the Resources menu
+  // Reaching the bottom starts the timed sequence:
+  // grow + bold for 4s → dissolve into dust → curved flight → resources ignite
   useEffect(() => {
-    if (taglineProgress >= 0.98 && !dustFired.current) {
-      dustFired.current = true
-      const t = taglineRef.current?.getBoundingClientRect()
-      const b = resourcesBtnRef.current?.getBoundingClientRect()
-      if (!t || !b) return
-      const particles: Dust[] = Array.from({ length: 32 }, (_, i) => ({
-        id: i,
-        startX: t.left + Math.random() * t.width,
-        startY: t.top + Math.random() * t.height,
-        endX: b.left + Math.random() * b.width,
-        endY: b.top + Math.random() * b.height,
-        size: 2 + Math.random() * 3,
-        delay: Math.random() * 350,
-        duration: 900 + Math.random() * 600,
-      }))
-      setDust(particles)
-      setDustFlying(false)
-      dustTimers.current.push(window.setTimeout(() => setDustFlying(true), 30))
-      dustTimers.current.push(
-        window.setTimeout(() => setResourcesBold(true), 1400)
-      )
-      dustTimers.current.push(window.setTimeout(() => setDust([]), 2200))
+    if (taglineProgress >= 0.95 && !seqFired.current) {
+      seqFired.current = true
+      setTaglinePhase('growing')
+      seqTimers.current.push(window.setTimeout(startDissolve, 4000))
     }
     // Scrolling back up resets the sequence so it can replay
-    if (taglineProgress < 0.3 && dustFired.current) {
-      dustFired.current = false
-      dustTimers.current.forEach(clearTimeout)
-      dustTimers.current = []
+    if (taglineProgress < 0.3 && seqFired.current) {
+      seqFired.current = false
+      seqTimers.current.forEach(clearTimeout)
+      seqTimers.current = []
+      if (rafId.current !== null) cancelAnimationFrame(rafId.current)
+      rafId.current = null
       setDust([])
-      setDustFlying(false)
+      setTaglinePhase('idle')
+      setResourcesIgnite(false)
       setResourcesBold(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taglineProgress])
 
-  const boldP = Math.min(1, taglineProgress / 0.5)
-  const dissolveP = Math.max(0, (taglineProgress - 0.5) / 0.5)
+  function startDissolve() {
+    setTaglinePhase('dissolving')
+    const t = taglineRef.current?.getBoundingClientRect()
+    const b = resourcesBtnRef.current?.getBoundingClientRect()
+    if (!t || !b) return
+    const rand = mulberry32(Date.now())
+    const particles: Dust[] = Array.from({ length: 320 }, (_, i) => {
+      const x0 = t.left + rand() * t.width
+      const y0 = t.top + rand() * t.height
+      const x1 = b.left + rand() * b.width
+      const y1 = b.top + rand() * b.height
+      // Cubic bezier: endpoints pinned to text/button so arrival is guaranteed;
+      // control points swing perpendicular to the straight line for varied curves
+      const dx = x1 - x0
+      const dy = y1 - y0
+      const len = Math.hypot(dx, dy) || 1
+      const px = -dy / len
+      const py = dx / len
+      const a1 = (rand() - 0.5) * len * 0.8
+      const a2 = (rand() - 0.5) * len * 0.5
+      return {
+        id: i,
+        size: 1.5 + rand() * 2.5,
+        delay: rand() * 700,
+        duration: 1100 + rand() * 1100,
+        x0,
+        y0,
+        cx1: x0 + dx * 0.33 + px * a1,
+        cy1: y0 + dy * 0.33 + py * a1,
+        cx2: x0 + dx * 0.66 + px * a2,
+        cy2: y0 + dy * 0.66 + py * a2,
+        x1,
+        y1,
+      }
+    })
+    setDust(particles)
+    animateDust(particles)
+    seqTimers.current.push(
+      window.setTimeout(() => {
+        setResourcesIgnite(true)
+        setResourcesBold(true)
+      }, 1200)
+    )
+    seqTimers.current.push(window.setTimeout(() => setResourcesIgnite(false), 3900))
+    seqTimers.current.push(window.setTimeout(() => setDust([]), 3100))
+  }
+
+  function animateDust(particles: Dust[]) {
+    const t0 = performance.now()
+    const step = () => {
+      const now = performance.now() - t0
+      let alive = false
+      particles.forEach((p, i) => {
+        const el = particleEls.current[i]
+        if (!el) return
+        const raw = (now - p.delay) / p.duration
+        if (raw < 1) alive = true
+        const tt = Math.min(1, Math.max(0, raw))
+        const e = tt < 0.5 ? 4 * tt * tt * tt : 1 - Math.pow(-2 * tt + 2, 3) / 2
+        const u = 1 - e
+        const x = u * u * u * p.x0 + 3 * u * u * e * p.cx1 + 3 * u * e * e * p.cx2 + e * e * e * p.x1
+        const y = u * u * u * p.y0 + 3 * u * u * e * p.cy1 + 3 * u * e * e * p.cy2 + e * e * e * p.y1
+        el.style.transform = `translate(${x}px, ${y}px)`
+        el.style.opacity = String(
+          tt <= 0 ? 0 : tt < 0.12 ? (tt / 0.12) * 0.9 : tt > 0.72 ? Math.max(0, 0.9 * (1 - (tt - 0.72) / 0.28)) : 0.9
+        )
+      })
+      rafId.current = alive ? requestAnimationFrame(step) : null
+    }
+    rafId.current = requestAnimationFrame(step)
+  }
 
   return (
     <main className="relative">
@@ -183,9 +257,10 @@ export default function Home() {
       </div>
 
       {/* ── DUST PARTICLES ── */}
-      {dust.map((p) => (
+      {dust.map((p, i) => (
         <div
           key={p.id}
+          ref={(el) => { particleEls.current[i] = el }}
           className="fixed z-[60] rounded-full pointer-events-none"
           style={{
             width: p.size,
@@ -193,9 +268,8 @@ export default function Home() {
             left: 0,
             top: 0,
             background: 'var(--cream)',
-            transform: `translate(${dustFlying ? p.endX : p.startX}px, ${dustFlying ? p.endY : p.startY}px)`,
-            opacity: dustFlying ? 0 : 0.9,
-            transition: `transform ${p.duration}ms cubic-bezier(0.3, 0.6, 0.25, 1) ${p.delay}ms, opacity ${p.duration}ms ease-in ${p.delay + p.duration * 0.4}ms`,
+            transform: `translate(${p.x0}px, ${p.y0}px)`,
+            opacity: 0,
           }}
         />
       ))}
@@ -226,7 +300,10 @@ export default function Home() {
                 ? 'rgba(240,236,228,0.1)'
                 : 'rgba(240,236,228,0.06)',
               border: '1.5px solid rgba(240,236,228,0.1)',
-              boxShadow: resourcesBold ? '0 0 24px rgba(240,236,228,0.2)' : 'none',
+              boxShadow: resourcesBold
+                ? '0 0 22px rgba(240,236,228,0.35), 0 0 70px rgba(240,236,228,0.15)'
+                : 'none',
+              animation: resourcesIgnite ? 'resourceIgnite 2.7s ease-in-out' : 'none',
               color: resourcesBold ? 'var(--cream-bright)' : 'var(--cream-dim)',
               fontFamily: 'var(--font-body)',
               fontSize: 'clamp(16px, 1.5vw, 19px)',
@@ -370,12 +447,16 @@ export default function Home() {
             style={{
               fontFamily: 'var(--font-body)',
               fontSize: 'clamp(0.85rem, 1.5vw, 1.1rem)',
-              fontWeight: 200 + Math.round(boldP * 500),
-              letterSpacing: `${0.25 + dissolveP * 0.12}em`,
+              fontWeight: taglinePhase === 'idle' ? 200 : 800,
+              transform: taglinePhase === 'idle' ? 'scale(1)' : 'scale(1.5)',
+              transformOrigin: 'center',
+              letterSpacing: taglinePhase === 'dissolving' ? '0.4em' : '0.25em',
               textTransform: 'uppercase',
-              color: 'var(--cream-dim)',
-              opacity: 1 - dissolveP,
-              filter: `blur(${dissolveP * 6}px)`,
+              color: taglinePhase === 'idle' ? 'var(--cream-dim)' : 'var(--cream-bright)',
+              opacity: taglinePhase === 'dissolving' ? 0 : 1,
+              filter: taglinePhase === 'dissolving' ? 'blur(8px)' : 'blur(0px)',
+              transition:
+                'font-weight 4s ease-in-out, transform 4s ease-in-out, color 4s ease-in-out, opacity 1s ease, filter 1s ease, letter-spacing 1s ease',
             }}
           >
             Create your own path
@@ -392,6 +473,13 @@ export default function Home() {
         @keyframes scrollHint {
           0%, 100% { opacity: 0; transform: translateY(-6px); }
           40%, 60% { opacity: 0.75; transform: translateY(4px); }
+        }
+        @keyframes resourceIgnite {
+          0% { box-shadow: 0 0 0 0 rgba(240,236,228,0); transform: scale(1); }
+          22% { box-shadow: 0 0 42px 14px rgba(240,236,228,0.55), 0 0 100px 38px rgba(240,236,228,0.22); transform: scale(1.08); }
+          42% { box-shadow: 0 0 20px 5px rgba(240,236,228,0.3), 0 0 60px 18px rgba(240,236,228,0.1); transform: scale(1.01); }
+          62% { box-shadow: 0 0 36px 11px rgba(240,236,228,0.48), 0 0 90px 30px rgba(240,236,228,0.18); transform: scale(1.05); }
+          100% { box-shadow: 0 0 22px 4px rgba(240,236,228,0.35), 0 0 70px 18px rgba(240,236,228,0.15); transform: scale(1); }
         }
       `}</style>
     </main>

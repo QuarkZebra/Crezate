@@ -28,6 +28,7 @@ export default function Home() {
   const [dust, setDust] = useState<Dust[]>([])
   const [dustFlying, setDustFlying] = useState(false)
   const [resourcesBold, setResourcesBold] = useState(false)
+  const [showScrollHint, setShowScrollHint] = useState(true)
   const wordRefs = useRef<(HTMLDivElement | null)[]>([])
   const brandRef = useRef<HTMLDivElement | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
@@ -45,6 +46,15 @@ export default function Home() {
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  // Hide scroll hint once user starts scrolling
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 60) setShowScrollHint(false)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   // Intersection observer for scroll-triggered reveals
@@ -256,7 +266,9 @@ export default function Home() {
                 Apps
               </div>
               <a
-                href="#"
+                href="https://310s-prep.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="block transition-colors duration-150"
                 style={{
                   padding: '16px 20px',
@@ -275,9 +287,6 @@ export default function Home() {
                 }}
               >
                 310S Red Seal Prep
-                <span className="block text-sm mt-1" style={{ color: 'rgba(240,236,228,0.2)' }}>
-                  Coming soon
-                </span>
               </a>
             </div>
           )}
@@ -285,14 +294,23 @@ export default function Home() {
       </nav>
 
       {/* ── SCROLL CONTENT ── */}
-      {/* First viewport: just the image, maybe a subtle scroll hint */}
-      <section className="relative z-10 h-screen flex items-end justify-center pb-12">
+      {/* First viewport: 100dvh so chevron stays above browser chrome on mobile */}
+      <section
+        className="relative z-10 flex items-end justify-center pb-10"
+        style={{ height: '100dvh' }}
+      >
         <div
-          className="animate-bounce"
-          style={{ color: 'var(--cream-dim)', opacity: 0.4 }}
+          style={{
+            color: 'var(--cream-bright)',
+            opacity: showScrollHint ? 1 : 0,
+            transition: 'opacity 0.8s ease',
+            animation: 'scrollHint 2.4s ease-in-out infinite',
+            pointerEvents: 'none',
+            filter: 'drop-shadow(0 0 6px rgba(240,236,228,0.4))',
+          }}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg width="44" height="26" viewBox="0 0 28 16" fill="none">
+            <path d="M4 4l10 9 10-9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </section>
@@ -370,6 +388,10 @@ export default function Home() {
         @keyframes menuIn {
           from { opacity: 0; transform: translateY(-4px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scrollHint {
+          0%, 100% { opacity: 0; transform: translateY(-6px); }
+          40%, 60% { opacity: 0.75; transform: translateY(4px); }
         }
       `}</style>
     </main>
